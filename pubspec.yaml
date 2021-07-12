@@ -21,6 +21,12 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  material_segmented_control: ^3.1.2
+  intl: ^0.17.0
+  flutter_datetime_picker: ^1.5.1
+  custom_sliding_segmented_control: ^1.0.0
+  firebase_core : ^1.0.1
+  firebase_picture_uploader: ^1.2.3
   flutter:
     sdk: flutter
 

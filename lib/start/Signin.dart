@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/start/Signup.dart';
+import 'package:untitled/write/write.dart';
 
 class SigninPage extends StatelessWidget {
   // this is key
@@ -100,7 +101,12 @@ class SigninPage extends StatelessWidget {
                                   return null;
                                 },
                               ),
-                              TextButton(onPressed: () {}, child: Text('Forgot your password?',
+                              TextButton(onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => WritePage()),
+                                );
+                              }, child: Text('Forgot your password?',
                                 style: TextStyle(
                                   fontFamily: 'avenir',
                                   // fontStyle: FontStyle.italic,
