@@ -4,13 +4,13 @@ import 'package:untitled/start/Signin.dart';
 class SignupPage extends StatelessWidget {
   // this is key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _sidController = TextEditingController();
+  final TextEditingController _pwController = TextEditingController();
+  final TextEditingController _pwConfController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final TextEditingController _sidController = TextEditingController();
-    final TextEditingController _pwController = TextEditingController();
-    final TextEditingController _pwConfController = TextEditingController();
 
     return Scaffold(
         body: Stack(
@@ -66,7 +66,7 @@ class SignupPage extends StatelessWidget {
                                       borderSide: BorderSide(width: 2, color: Colors.red)
                                     ),
                                     suffix: Text('@handong.edu'),
-                                    labelText: "Student ID"
+                                    hintText: "Student ID"
                                 ),
                                     validator: (String? value) {
                                       if (value == null || value.isEmpty) {
@@ -91,7 +91,7 @@ class SignupPage extends StatelessWidget {
                                     enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(width: 2, color: const Color(0xff6990FF),)
                                     ),
-                                    labelText: "Password"
+                                    hintText: "Password"
                                 ),
                                 validator: (String? value){
                                   if(value == null || value.isEmpty) {
@@ -114,7 +114,7 @@ class SignupPage extends StatelessWidget {
                                     enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(width: 2, color: const Color(0xff6990FF),)
                                     ),
-                                    labelText: "Password Confirm"
+                                    hintText: "Password Confirm"
                                 ),
                                 validator: (String? value){
                                   if(value == null || value.isEmpty) {
@@ -142,9 +142,9 @@ class SignupPage extends StatelessWidget {
                             child: Text('Signup', style: TextStyle(color: Colors.white)),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                             onPressed: () {
-                              // if(_formKey.currentState.validator()) {
-                              //   print('Button Pressed!');
-                              // }
+                              print("student = " + _sidController.text.toString());
+                              print("student = " + _pwController.text.toString());
+                              print("student = " + _pwConfController.text.toString());
                             }
                         ),
                       ),
