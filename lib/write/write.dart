@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:untitled/start/Signin.dart';
-import 'package:untitled/start/Signup.dart';
-import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 
 enum SegmentType { news, map, paper }
 class WritePage extends StatelessWidget {
   // this is key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _detailController = TextEditingController();
+
   int _currentSelection = 0;
   Map<int, Widget> _children = {
     0: Text('주웠어요'),
@@ -21,11 +24,6 @@ class WritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final TextEditingController _titleController = TextEditingController();
-    final TextEditingController _contentController = TextEditingController();
-    final TextEditingController _dateController = TextEditingController();
-    final TextEditingController _detailController = TextEditingController();
-
     return Scaffold(
         body: Column(
             children: <Widget>[
@@ -38,6 +36,13 @@ class WritePage extends StatelessWidget {
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
+                    print("selection type = ");
+                    print("title = " + _titleController.text.toString());
+                    print("content = " + _contentController.text.toString());
+                    print("things kinds = ");
+                    print("place = ");
+                    print("date = " + _dateController.text.toString());
+                    print("detail = " + _detailController.text.toString());
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SigninPage()),
@@ -126,7 +131,7 @@ class WritePage extends StatelessWidget {
                                               },
                                               groupValue: _sliding,
                                               onValueChanged: (newValue) {
-                                                // my specific logic here...
+                                                // my logic here...
                                               }),
                                         ),
                                         Divider(thickness: 1),
@@ -208,7 +213,9 @@ class WritePage extends StatelessWidget {
                                             value: label,
                                           ))
                                               .toList(),
-                                          onChanged: (_) {},
+                                          onChanged: (_) {
+                                            // my logic here...
+                                          },
                                         ),
                                         Divider(thickness: 1),
                                         // 장소
@@ -227,9 +234,16 @@ class WritePage extends StatelessWidget {
                                             value: label,
                                           ))
                                               .toList(),
-                                          onChanged: (_) {},
+                                          onChanged: (_) {
+                                            // my logic here...
+                                          },
                                         ),
                                         Divider(thickness: 1),
+                                        // BirthDatePicker(
+                                        //   onDateTimeChanged: (dateTime) {
+                                        //
+                                        //   }, initDateStr: '1970-01-01',
+                                        // ),
                                         // DatePicker
                                         TextFormField(
                                           controller: _dateController,
@@ -287,6 +301,34 @@ class WritePage extends StatelessWidget {
             ),
           ]
         )
+    );
+  }
+}
+
+// Date picker widget
+class BirthDatePicker extends StatelessWidget {
+  final void Function(DateTime) onDateTimeChanged;
+  final String initDateStr;
+
+  BirthDatePicker({
+    required this.onDateTimeChanged,
+    required this.initDateStr,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final initDate =
+    DateFormat('yyyy-MM-dd').parse(initDateStr ?? '2000-01-01');
+    return SizedBox(
+      height: 300,
+      child: CupertinoDatePicker(
+        minimumYear: 1900,
+        maximumYear: DateTime.now().year,
+        initialDateTime: initDate,
+        maximumDate: DateTime.now(),
+        onDateTimeChanged: onDateTimeChanged,
+        mode: CupertinoDatePickerMode.date,
+      ),
     );
   }
 }

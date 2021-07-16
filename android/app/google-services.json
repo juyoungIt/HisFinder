@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "806618056066",
+    "project_id": "hisfinder-test-2c1b3",
+    "storage_bucket": "hisfinder-test-2c1b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806618056066:android:6d84c35a8da47cb521fb9b",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806618056066-e8etj5nejdtnc29rncvgiqd6mpj0jnpa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.untitled",
+            "certificate_hash": "4dbc2d02bb9640684aea960b50d454f1d72ec159"
+          }
+        },
+        {
+          "client_id": "806618056066-lgl25mfajbkmnfsi17mt2s7rcrense01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx_6LWqtwvvVtwCuBYYw7o0PqSD1A_GQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "806618056066-lgl25mfajbkmnfsi17mt2s7rcrense01.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "806618056066-rms9l387s941h37fpe3kdhro99n38ofv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hjy2885-naver.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
