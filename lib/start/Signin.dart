@@ -31,8 +31,6 @@ class SigninPage extends StatelessWidget {
   }
 }
 
-
-
 // 로그인창 상단에 표시되는 "HisFinder" 로고에 대해 정의한 부분
 class LogoText extends StatelessWidget {
   @override
@@ -51,12 +49,22 @@ class LogoText extends StatelessWidget {
 }
 
 // 로그인 정보를 입력받는 form과 로그인 버튼에 대한 부분
-class InputForm extends StatelessWidget {
+class InputForm extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return InputFormTemplate();
+  }
+}
+
+class InputFormTemplate extends State<InputForm> {
   final TextEditingController _sidController = TextEditingController(); // 학번 입력 form에 대한 controller
   final TextEditingController _pwController = TextEditingController();  // password 입력 form에 대한 controller
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: <Widget>[
           // 학번을 입력하는 코드 부분
@@ -67,24 +75,27 @@ class InputForm extends StatelessWidget {
                   prefixIcon: Image.asset("assets/sid.png", scale: 3),
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
+                  errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
                   hintText: "Student ID"
               ),
               validator: (value) {
                 if(value!.length < 1)
                   return "학번을 입력해주세요.";
-              }
+                }
           ),
           Container(height: 10),
           TextFormField(
               obscureText: true,
               controller: _pwController,
               decoration: InputDecoration(
-                  contentPadding: new EdgeInsets.symmetric(vertical: 1.0, horizontal: 10.0),
-                  prefixIcon: Image.asset("assets/password.png", scale: 3),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
-                  hintText: "Password",
+                contentPadding: new EdgeInsets.symmetric(vertical: 1.0, horizontal: 10.0),
+                prefixIcon: Image.asset("assets/password.png", scale: 3),
+                focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
+                enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
+                errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
+                border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
+                hintText: "Password",
               ),
               validator: (value){
                 if(value!.length < 1)
@@ -96,8 +107,8 @@ class InputForm extends StatelessWidget {
             child: TextButton(
                 child: Text('Forgot your password?',
                   style: TextStyle(
-                      fontFamily: 'avenir',
-                      color: const Color(0xff6990FF),
+                    fontFamily: 'avenir',
+                    color: const Color(0xff6990FF),
                   ),
                 ),
                 onPressed: () { }
@@ -113,8 +124,18 @@ class InputForm extends StatelessWidget {
                   ),
                   child: Text('Sign in', style: TextStyle(color: Colors.white)),
                   onPressed: () {
-                    print("user id = " + _sidController.text);
-                    print("password = " + _pwController.text);
+                    if (_formKey.currentState!.validate()) {
+                      // If the form is valid, display a snackbar. In the real world,
+                      // you'd often call a server or save the information in a database.
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('로그인 되었습니다')));
+                      print("user id = " + _sidController.text);
+                      print("password = " + _pwController.text);
+                    }
+                    else {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
+                    }
                   }
               )
           )
