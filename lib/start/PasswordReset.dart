@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:untitled/start/Signup.dart';
 import 'package:untitled/write/write.dart';
 
-import 'PasswordReset.dart';
+import 'Signin.dart';
 
-class SigninPage extends StatelessWidget {
+class PasswordResetPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -26,7 +26,6 @@ class SigninPage extends StatelessWidget {
                   padding: EdgeInsets.all(size.width*0.06),
                   child: InputForm(),
                 ),
-                GuestLogin(), // 게스트 로그인과 관련된 컴포넌트를 삽입하는 부분
               ],
             ),
             GoToSignUp(),
@@ -61,9 +60,9 @@ class InputForm extends StatefulWidget {
   }
 }
 
+// 회원가입한 이메일 정보를 입력하는 부분
 class InputFormTemplate extends State<InputForm> {
   final TextEditingController _sidController = TextEditingController(); // 학번 입력 form에 대한 controller
-  final TextEditingController _pwController = TextEditingController();  // password 입력 form에 대한 controller
   final _formKey = GlobalKey<FormState>();
 
   // Set default `_initialized` and `_error` state to false
@@ -108,50 +107,14 @@ class InputFormTemplate extends State<InputForm> {
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                   errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                  hintText: "Student ID"
+                  hintText: "학번을 입력하세요."
               ),
               validator: (value) {
                 if(value!.length < 1)
                   return "학번을 입력해주세요.";
-                else if(value.length != 8)
-                  return "학번이 유효하지 않습니다.";
-                }
-          ),
-          Container(height: 10),
-          TextFormField(
-              obscureText: true,
-              controller: _pwController,
-              decoration: InputDecoration(
-                contentPadding: new EdgeInsets.symmetric(vertical: 1.0, horizontal: 10.0),
-                prefixIcon: Image.asset("assets/password.png", scale: 3),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
-                errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
-                border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                hintText: "Password",
-              ),
-              validator: (value){
-                if(value!.length < 1)
-                  return "비밀번호를 입력해주세요.";
               }
           ),
-          Container(
-            alignment: Alignment.topRight,
-            child: TextButton(
-                child: Text('Forgot your password?',
-                  style: TextStyle(
-                    fontFamily: 'avenir',
-                    color: const Color(0xff6990FF),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PasswordResetPage()),
-                  );
-                }
-            ),
-          ),
+          Container(height: 10),
           SizedBox(
               width: 500,
               height: 50,
@@ -160,81 +123,24 @@ class InputFormTemplate extends State<InputForm> {
                     primary: const Color(0xff6990FF), // background
                     onPrimary: Colors.white, // foreground
                   ),
-                  child: Text('Sign in', style: TextStyle(color: Colors.white)),
+                  child: Text('초기화 메일 보내기', style: TextStyle(color: Colors.white)),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      try {
-                        // 로그인을 시도함
-                        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                            email: _sidController.text + "@handong.edu",
-                            password: _pwController.text
-                        );
-                        User? user = FirebaseAuth.instance.currentUser;
-                        if(user != null && !user.emailVerified) {
-                          await user.sendEmailVerification();
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다. 메일주소를 인증하세요.')));
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('로그인 되었습니다')));
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => WritePage()),
-                          );
-                        }
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('학번을 확인해주세요')));
-                        } else if (e.code == 'wrong-password') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('비밀번호를 확인해주세요')));
-                        }
-                      }
-                    }
-                    else {
+                      FirebaseAuth.instance.sendPasswordResetEmail(
+                          email: _sidController.text + "@handong.edu"
+                      );
                       ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
+                          .showSnackBar(SnackBar(content: Text('초기화 메일을 발송하였습니다. 이메일을 확인해주세요')));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SigninPage()),
+                      );
                     }
                   }
               )
           )
         ],
       ),
-    );
-  }
-}
-
-// 게스트 로그인을 안내하는 파트
-class GuestLogin extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        // - Guest Login 기능에 대한 부분 -
-        Text(
-          '-OR-',
-          style: TextStyle(
-            fontFamily: 'avenir',
-            color: const Color(0xff6990FF),
-          ),
-        ),
-        Container(height: 15), // 공백 삽입을 목적으로 추가된 부분
-        // Gueset Login을 안내하는 text를 출력하는 부분
-        Text(
-          'Guest Login',
-          style: TextStyle(
-            fontFamily: 'avenir',
-            fontWeight: FontWeight.bold,
-            color: const Color(0xff6990FF),
-          ),
-        ),
-        // 게스트 로그인 기능으로 연결되는 버튼 부분
-        IconButton(
-          onPressed: () { },
-          icon: Image.asset('assets/guest.png', scale: 4),
-        )
-      ],
     );
   }
 }

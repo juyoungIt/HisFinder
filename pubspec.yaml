@@ -24,13 +24,10 @@ dependencies:
   material_segmented_control: ^3.1.2
   intl: ^0.17.0
   flutter_datetime_picker: ^1.5.1
-
-  # firebase_auth: ^0.14.0+5     # firebase의 인증기능을 제공하는 플러그인
-  # provider: ^3.1.0+1           # 여러 페이지에서 인증정보를 공유하기 위해 사용할 Provider 기능을 제공하는 플러그인
-  # shared_preferences: ^0.5.3+4 # 사용자의 메일주소와 비밀번호를 저장하기 위해 사용할 플러그인
-  # logger: ^0.7.0+2             # 로그를 출력하기 위해서 사용하는 플러그인 (optional)
   flutter:
     sdk: flutter
+  firebase_core: "^1.4.0"
+  firebase_auth: "^3.0.1"
 
 
   # The following adds the Cupertino Icons font to your application.

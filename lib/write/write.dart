@@ -81,46 +81,6 @@ class WritePage extends StatelessWidget {
                                       key: _formKey,
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: <Widget>[
-                                        // selection part here...
-                                        // Container(
-                                        //   alignment: Alignment.center,
-                                        //   child: Container(
-                                        //     width: 130,
-                                        //     padding: EdgeInsets.all(0),
-                                        //     alignment: Alignment.center,
-                                        //     decoration: BoxDecoration(
-                                        //       border: Border.all(
-                                        //         width: 2,
-                                        //         color: Color(0xff6990FF)),
-                                        //       borderRadius: BorderRadius.all(
-                                        //           Radius.circular(8.0) // POINT
-                                        //       ),
-                                        //       ),
-                                        //     child: CustomSlidingSegmentedControl<SegmentType>(
-                                        //       children: {
-                                        //         SegmentType.news: Text(
-                                        //           '주웠어요',
-                                        //           style: TextStyle(color: Colors.white),
-                                        //         ),
-                                        //         SegmentType.map: Text(
-                                        //           '찾아요',
-                                        //           style: TextStyle(color: Colors.black),
-                                        //         ),
-                                        //       },
-                                        //       elevation: 0,
-                                        //       innerPadding: 0,
-                                        //       padding: 10,
-                                        //       backgroundColor: Colors.white,
-                                        //       thumbColor: Color(0xff6990FF),
-                                        //       textColor: Colors.black,
-                                        //       duration: Duration(milliseconds: 300),
-                                        //       curve: Curves.easeInToLinear,
-                                        //       onValueChanged: (v) {
-                                        //         print(v);
-                                        //       },
-                                        //     ),
-                                        //   ),
-                                        // ),
                                         Container(
                                           padding: new EdgeInsets.symmetric(vertical: 30.0, horizontal: 10.0),
                                           alignment: Alignment.center,
