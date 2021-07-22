@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/start/Signin.dart';
+import 'package:untitled/write/write.dart';
 
 // main 함수, flutter 앱의 시작점을 의미함.
 void main() {
@@ -21,7 +22,7 @@ class MyAppTemplate extends State<MyApp> {
     // material 디자인을 사용하는 애플리케이션을 생성하겠음을 의미
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 상단 베너 삭제
-      home: SigninPage(), // 앱의 기본경로를 위한 widget
+      home: WritePage(), // 앱의 기본경로를 위한 widget
     );
   }
 }
