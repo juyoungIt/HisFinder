@@ -4,7 +4,9 @@ import 'package:untitled/start/Signin.dart';
 import 'package:untitled/write/write.dart';
 
 // main 함수, flutter 앱의 시작점을 의미함.
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

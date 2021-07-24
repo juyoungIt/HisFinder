@@ -1,18 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:untitled/start/Signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 
 class WritePage extends StatelessWidget {
-  // this is key
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _detailController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -28,17 +21,7 @@ class WritePage extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                print("selection type = ");
-                print("title = " + _titleController.text.toString());
-                print("content = " + _contentController.text.toString());
-                print("things kinds = ");
-                print("place = ");
-                print("date = " + _dateController.text.toString());
-                print("detail = " + _detailController.text.toString());
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
-                );
+                // 여기로 값을 가져오는 별도의 로직이 필요함.
               },
               child: Text(
                 '완료',
@@ -50,22 +33,25 @@ class WritePage extends StatelessWidget {
             ),
           ],
         ),
-        body: Column(
-            children: <Widget>[
-            // 글을 입력하는 Form이 시작되는 부분
-            Container(
-              child: Expanded(
-                child: SizedBox(
-                  height: 1000,
-                  child: ListView(
-                    children: [
-                      InputForm(),
-                    ],
+        body: Padding(
+          padding: new EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+              children: <Widget>[
+              // 글을 입력하는 Form이 시작되는 부분
+              Container(
+                child: Expanded(
+                  child: SizedBox(
+                    height: 1000,
+                    child: ListView(
+                      children: [
+                        InputForm(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ]
+            ]
+          ),
         )
     );
   }
@@ -89,38 +75,97 @@ class InputFormTemplate extends State<InputForm> {
   final TextEditingController _detailController = TextEditingController();
   int segmented = 0;
 
+  // Set default `_initialized` and `_error` state to false
+  bool _initialized = false;
+  bool _error = false;
+  List<UploadJob> _profilePictures = [];
+
+  // Define an async function to initialize FlutterFire
+  void initializeFlutterFire() async {
+    try {
+      // Wait for Firebase to initialize and set `_initialized` state to true
+      await Firebase.initializeApp();
+      setState(() {
+        _initialized = true;
+      });
+    } catch(e) {
+      // Set `_error` state to true if Firebase initialization fails
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    initializeFlutterFire();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final profilePictureTile = new Material(
+      color: Colors.transparent,
+      child: new Column(
+        children: <Widget>[
+          PictureUploadWidget(
+            initialImages: _profilePictures,
+            onPicturesChange: profilePictureCallback,
+            buttonStyle: PictureUploadButtonStyle(
+              backgroundColor: Color(0xff6990FF),
+              height: 80
+            ),
+            buttonText: '0 / 5',
+            localization: PictureUploadLocalization(),
+            settings: PictureUploadSettings(
+                uploadDirectory: '/write_images/',
+                imageSource: ImageSourceExtended.askUser,
+                onErrorFunction: onErrorCallback,
+                minImageCount: 0,
+                maxImageCount: 5,
+                imageManipulationSettings: const ImageManipulationSettings(
+                    enableCropping: true, compressQuality: 75)),
+            enabled: true,
+          ),
+        ],
+      ),
+    );
+
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           // 글의 종류를 선택하는 부분
-          SizedBox(
-            width: 200,
-            height: 100,
-            child: CupertinoSegmentedControl(
-                unselectedColor: Colors.white,
-                selectedColor: Color(0xff6990FF),
-                borderColor: Color(0xff6990FF),
-                padding: EdgeInsets.all(0),
-                children: {
-                  0: Text('습득물'),
-                  1: Text('분실물'),
-                },
-                groupValue: segmented,
-                onValueChanged: (newValue) {
-                  setState(() {
-                    segmented = newValue as int;
-                  });
-                }
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[SizedBox(
+              width: 200,
+              height: 100,
+              child: CupertinoSegmentedControl(
+                  unselectedColor: Colors.white,
+                  selectedColor: Color(0xff6990FF),
+                  borderColor: Color(0xff6990FF),
+                  padding: EdgeInsets.all(0),
+                  children: {
+                    0: Text('습득물'),
+                    1: Text('분실물'),
+                  },
+                  groupValue: segmented,
+                  onValueChanged: (newValue) {
+                    setState(() {
+                      segmented = newValue as int;
+                    });
+                  }
+              ),
             ),
-          ),
+          ]),
 
           // 업로드할 사진을 선택하는 부분
-          // 관련 라이브러리 찾음 이걸 어떻게 적용할 것인지가 또 관건이 된다...
+          Column(
+              children: <Widget>[profilePictureTile]
+          ),
 
           Divider(thickness: 1),
           // 글의 제목을 입력하는 부분
@@ -257,5 +302,14 @@ class InputFormTemplate extends State<InputForm> {
         ],
       ),
     );
+  }
+
+  // callback function
+  void profilePictureCallback({required List<UploadJob> uploadJobs, required bool pictureUploadProcessing}) {
+    _profilePictures = uploadJobs;
+  }
+  void onErrorCallback(error, stackTrace) {
+    print(error);
+    print(stackTrace);
   }
 }
