@@ -21,7 +21,23 @@ class WritePage extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                // 여기로 값을 가져오는 별도의 로직이 필요함.
+                if (InputFormTemplate._formKey.currentState!.validate()) {
+                  // 여기서 각각의 데이터를 document의 형태로 저장해야 함.
+                  print("the input result");
+                  print("selection : " + ((InputFormTemplate.segmented.toString() != "1") ? "습득물" : "분실물"));
+                  for(int i=0 ; i<InputFormTemplate._profilePictures.length-1 ; i++)
+                    print("Picture " + i.toString() + " - " + InputFormTemplate._profilePictures[i].storageReference.fullPath);
+                  print("title : " + InputFormTemplate._titleController.text);
+                  print("content : " + InputFormTemplate._contentController.text);
+                  print("item : " + InputFormTemplate.item);
+                  print("place : " + InputFormTemplate.place);
+                  print("date : " + InputFormTemplate._dateController.text);
+                  print("detail : " + InputFormTemplate._detailController.text);
+                }
+                else {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text('글을 등록하기에 정보가 충분하지 않습니다.')));
+                }
               },
               child: Text(
                 '완료',
@@ -68,17 +84,21 @@ class InputForm extends StatefulWidget {
 // 글에 대한 정보를 입력받느 Form Template 의 정보들을 호출함
 class InputFormTemplate extends State<InputForm> {
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _detailController = TextEditingController();
-  int segmented = 0;
+  // 각 Form에 입력되는 값을 가져오기 위한 Controller
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  static final TextEditingController _titleController = TextEditingController();
+  static final TextEditingController _contentController = TextEditingController();
+  static final TextEditingController _dateController = TextEditingController();
+  static final TextEditingController _detailController = TextEditingController();
+  static int segmented = 0;
+  static var item;
+  static var place;
 
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
   bool _error = false;
-  List<UploadJob> _profilePictures = [];
+  static List<UploadJob> _profilePictures = [];
+  int curUploadedImages = 0;
 
   // Define an async function to initialize FlutterFire
   void initializeFlutterFire() async {
@@ -115,7 +135,7 @@ class InputFormTemplate extends State<InputForm> {
               backgroundColor: Color(0xff6990FF),
               height: 80
             ),
-            buttonText: '0 / 5',
+            buttonText: "$curUploadedImages" + ' / 5',
             localization: PictureUploadLocalization(),
             settings: PictureUploadSettings(
                 uploadDirectory: '/write_images/',
@@ -177,7 +197,7 @@ class InputFormTemplate extends State<InputForm> {
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
-                errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
+                errorBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
               ),
               validator: (value) {
@@ -200,7 +220,7 @@ class InputFormTemplate extends State<InputForm> {
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
-                errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
+                errorBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
               ),
                 validator: (value){
@@ -213,7 +233,7 @@ class InputFormTemplate extends State<InputForm> {
 
           // 물건의 종류를 선택하는 부분
           DropdownButtonFormField<String>(
-            hint: Text("물건종류"),
+            hint: Text("  물건종류"),
             decoration: InputDecoration (
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -228,14 +248,18 @@ class InputFormTemplate extends State<InputForm> {
               value: label,
             ))
                 .toList(),
-            onChanged: (_) {
-              // my logic here...
+            onChanged: (label) {
+              item = label;
             },
+              validator: (item) {
+                if(item == null)
+                  return "분실/습득한 물건을 입력해주세요.";
+              }
           ),
           Divider(thickness: 1),
           // 분실/습득 장소를 선택하는 부분
           DropdownButtonFormField<String>(
-            hint: Text("장소"),
+            hint: Text("  장소"),
             decoration: InputDecoration (
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -243,15 +267,21 @@ class InputFormTemplate extends State<InputForm> {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
             ),
-            items: ["평봉필드", "학관", "기숙사"]
+            items: ["현동홀", "뉴턴홀", "올네이션스홀", "느헤미야홀", "그레이스스쿨",
+              "언어교육원", "효암채플", "비전관", "창조관", "벧엘관", "로뎀관", "하용조관",
+              "갈대상자관", "기타"]
                 .map((label) => DropdownMenuItem(
               child: Text(label),
               value: label,
             ))
                 .toList(),
-            onChanged: (_) {
-              // my logic here...
+            onChanged: (label) {
+              place = label;
             },
+              validator: (place) {
+                if(place == null)
+                  return "습득/분실 장소를 입력해주세요.";
+              }
           ),
           Divider(thickness: 1),
           // 분실/습득한 날짜를 선택하는 부분
@@ -268,6 +298,10 @@ class InputFormTemplate extends State<InputForm> {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
             ),
+            validator: (value) {
+              if(value!.length < 1)
+                return "분실/습득날짜를 입력해주세요.";
+              },
             onTap: () {
               DatePicker.showDatePicker(context,
                   showTitleActions: true,
@@ -293,10 +327,13 @@ class InputFormTemplate extends State<InputForm> {
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
-              errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
+              errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
             ),
-              validator: (value){ }
+            validator: (value) {
+              if(value!.length < 1)
+                return "상세정보를 입력해주세요.";
+            },
           ),
           Divider(thickness: 1),
         ],
@@ -307,7 +344,12 @@ class InputFormTemplate extends State<InputForm> {
   // callback function
   void profilePictureCallback({required List<UploadJob> uploadJobs, required bool pictureUploadProcessing}) {
     _profilePictures = uploadJobs;
+    // 업로드된 사진의 수를 표시하기 위한 부분
+    setState(() {
+      curUploadedImages = _profilePictures.length-1;
+    });
   }
+  // error callback function
   void onErrorCallback(error, stackTrace) {
     print(error);
     print(stackTrace);
