@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/start/Signup.dart';
+import 'package:untitled/write/write.dart';
 
 import 'PasswordReset.dart';
 import 'TestHome.dart';
@@ -179,7 +180,7 @@ class InputFormTemplate extends State<InputForm> {
                               .showSnackBar(SnackBar(content: Text('로그인 되었습니다')));
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => TestHomePage()),
+                            MaterialPageRoute(builder: (context) => WritePage()),
                           );
                         }
                       } on FirebaseAuthException catch (e) {

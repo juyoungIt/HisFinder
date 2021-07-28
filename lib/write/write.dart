@@ -4,8 +4,10 @@ import 'package:untitled/start/Signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WritePage extends StatelessWidget {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -21,11 +23,15 @@ class WritePage extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                int length; // 업로드 이미지를 저장하는 배열의 길이 (버튼 때문에 업로드된 수보다 1크게 할당됨)
+                // 여기서 database에 데이터를 주입하는 로직이 들어가야 함
                 if (InputFormTemplate._formKey.currentState!.validate()) {
                   // 여기서 각각의 데이터를 document의 형태로 저장해야 함.
                   print("the input result");
                   print("selection : " + ((InputFormTemplate.segmented.toString() != "1") ? "습득물" : "분실물"));
-                  for(int i=0 ; i<InputFormTemplate._profilePictures.length-1 ; i++)
+                  print("--- (DEBUG)lenght = " + InputFormTemplate._profilePictures.length.toString());
+                  length = (InputFormTemplate._profilePictures.length == 5) ? InputFormTemplate._profilePictures.length : InputFormTemplate._profilePictures.length-1;
+                  for(int i=0 ; i<length ; i++)
                     print("Picture " + i.toString() + " - " + InputFormTemplate._profilePictures[i].storageReference.fullPath);
                   print("title : " + InputFormTemplate._titleController.text);
                   print("content : " + InputFormTemplate._contentController.text);
@@ -33,6 +39,23 @@ class WritePage extends StatelessWidget {
                   print("place : " + InputFormTemplate.place);
                   print("date : " + InputFormTemplate._dateController.text);
                   print("detail : " + InputFormTemplate._detailController.text);
+
+                  // firestore에 값을 주입
+                  firestore.collection("Writings").add(
+                      {
+                        'type': ((InputFormTemplate.segmented.toString() != "1") ? "습득물" : "분실물"),
+                        for(int i=0 ; i<length ; i++)
+                          'picture' + i.toString() : InputFormTemplate._profilePictures[i].storageReference.fullPath,
+                        'title': InputFormTemplate._titleController.text,
+                        'content': InputFormTemplate._contentController.text,
+                        'item': InputFormTemplate.item,
+                        'place': InputFormTemplate.place,
+                        'date': InputFormTemplate._dateController.text,
+                        'detail': InputFormTemplate._detailController.text
+                      }
+                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
                 }
                 else {
                   ScaffoldMessenger.of(context)
@@ -124,6 +147,7 @@ class InputFormTemplate extends State<InputForm> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     final profilePictureTile = new Material(
       color: Colors.transparent,
       child: new Column(
@@ -232,57 +256,70 @@ class InputFormTemplate extends State<InputForm> {
           Divider(thickness: 1),
 
           // 물건의 종류를 선택하는 부분
-          DropdownButtonFormField<String>(
-            hint: Text("  물건종류"),
-            decoration: InputDecoration (
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[SizedBox(
+              width: size.width * 0.85,
+              child: DropdownButtonFormField<String>(
+                hint: Text("물건종류"),
+                decoration: InputDecoration (
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+                items: ["학생증", "일반카드(개인/세탁카드)", "에어팟, 버즈"
+                  , "화장품", "돈, 지갑", "전자기기", "악세서리", "필기구", "기타"]
+                    .map((label) => DropdownMenuItem(
+                  child: Text(label),
+                  value: label,
+                ))
+                    .toList(),
+                onChanged: (label) {
+                  item = label;
+                },
+                  validator: (item) {
+                    if(item == null)
+                      return "분실/습득한 물건을 입력해주세요.";
+                  }
+              ),
             ),
-            items: ["학생증", "일반카드(개인/세탁카드)", "에어팟, 버즈"
-              , "화장품", "돈, 지갑", "전자기기", "악세서리", "필기구", "기타"]
-                .map((label) => DropdownMenuItem(
-              child: Text(label),
-              value: label,
-            ))
-                .toList(),
-            onChanged: (label) {
-              item = label;
-            },
-              validator: (item) {
-                if(item == null)
-                  return "분실/습득한 물건을 입력해주세요.";
-              }
-          ),
+          ]),
           Divider(thickness: 1),
           // 분실/습득 장소를 선택하는 부분
-          DropdownButtonFormField<String>(
-            hint: Text("  장소"),
-            decoration: InputDecoration (
-              border: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[SizedBox(
+              width: size.width * 0.85,
+              child: DropdownButtonFormField<String>(
+                hint: Text("장소"),
+                decoration: InputDecoration (
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+                items: ["현동홀", "뉴턴홀", "올네이션스홀", "느헤미야홀", "그레이스스쿨",
+                  "언어교육원", "효암채플", "코너스톤홀", "오석관", "기숙사", "학관", "기타"]
+                    .map((label) => DropdownMenuItem(
+                  child: Text(label),
+                  value: label,
+                ))
+                    .toList(),
+                onChanged: (label) {
+                  place = label;
+                },
+                  validator: (place) {
+                    if(place == null)
+                      return "습득/분실 장소를 입력해주세요.";
+                  }
+              ),
             ),
-            items: ["현동홀", "뉴턴홀", "올네이션스홀", "느헤미야홀", "그레이스스쿨",
-              "언어교육원", "효암채플", "비전관", "창조관", "벧엘관", "로뎀관", "하용조관",
-              "갈대상자관", "기타"]
-                .map((label) => DropdownMenuItem(
-              child: Text(label),
-              value: label,
-            ))
-                .toList(),
-            onChanged: (label) {
-              place = label;
-            },
-              validator: (place) {
-                if(place == null)
-                  return "습득/분실 장소를 입력해주세요.";
-              }
-          ),
+          ]),
           Divider(thickness: 1),
           // 분실/습득한 날짜를 선택하는 부분
           TextFormField(
@@ -330,10 +367,6 @@ class InputFormTemplate extends State<InputForm> {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
             ),
-            validator: (value) {
-              if(value!.length < 1)
-                return "상세정보를 입력해주세요.";
-            },
           ),
           Divider(thickness: 1),
         ],
