@@ -18,13 +18,14 @@ class MyApp extends StatefulWidget {
   }
 }
 
+// 실질적인 애플리케이션의 시작이 이뤄지는 부분
 class MyAppTemplate extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     // material 디자인을 사용하는 애플리케이션을 생성하겠음을 의미
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 상단 베너 삭제
-      home: SigninPage(), // 앱의 기본경로를 위한 widget
+      home: WritePage(), // 앱의 기본경로를 위한 widget
     );
   }
 }

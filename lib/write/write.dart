@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/home/home.dart';
 import 'package:untitled/start/Signin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -18,46 +19,57 @@ class WritePage extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Color(0xff6990FF),
           // 이전으로 돌아가는 동작 추가해야 함
-          leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: null),
+          leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: (){}),
           // 이 부분에 입력된 글을 바탕으로 DB에 값을 저장하는 동작 추가되어야 함
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                int length; // 업로드 이미지를 저장하는 배열의 길이 (버튼 때문에 업로드된 수보다 1크게 할당됨)
                 // 여기서 database에 데이터를 주입하는 로직이 들어가야 함
                 if (InputFormTemplate._formKey.currentState!.validate()) {
-                  // 여기서 각각의 데이터를 document의 형태로 저장해야 함.
-                  print("the input result");
-                  print("selection : " + ((InputFormTemplate.segmented.toString() != "1") ? "습득물" : "분실물"));
-                  print("--- (DEBUG)lenght = " + InputFormTemplate._profilePictures.length.toString());
-                  length = (InputFormTemplate._profilePictures.length == 5) ? InputFormTemplate._profilePictures.length : InputFormTemplate._profilePictures.length-1;
-                  for(int i=0 ; i<length ; i++)
-                    print("Picture " + i.toString() + " - " + InputFormTemplate._profilePictures[i].storageReference.fullPath);
-                  print("title : " + InputFormTemplate._titleController.text);
-                  print("content : " + InputFormTemplate._contentController.text);
-                  print("item : " + InputFormTemplate.item);
-                  print("place : " + InputFormTemplate.place);
-                  print("date : " + InputFormTemplate._dateController.text);
-                  print("detail : " + InputFormTemplate._detailController.text);
+                  int length = (InputFormTemplate._profilePictures.length == 5) ? InputFormTemplate._profilePictures.length : InputFormTemplate._profilePictures.length-1;
 
-                  // firestore에 값을 주입
-                  firestore.collection("Writings").add(
-                      {
-                        'type': ((InputFormTemplate.segmented.toString() != "1") ? "습득물" : "분실물"),
-                        for(int i=0 ; i<length ; i++)
-                          'picture' + i.toString() : InputFormTemplate._profilePictures[i].storageReference.fullPath,
-                        'title': InputFormTemplate._titleController.text,
-                        'content': InputFormTemplate._contentController.text,
-                        'item': InputFormTemplate.item,
-                        'place': InputFormTemplate.place,
-                        'date': InputFormTemplate._dateController.text,
-                        'detail': InputFormTemplate._detailController.text
-                      }
+                  // 작성된 글의 종류에 따라서 사용하는 collection의 종류를 구분하여 데이터를 처리하는 로직
+                  // 습득물이 선택된 경우
+                  if(InputFormTemplate.segmented.toString() != "1") {
+                    firestore.collection("Founds").add({
+                      for(int i=0 ; i<length ; i++)
+                        'picture' + i.toString() : InputFormTemplate._profilePictures[i].storageReference.fullPath,
+                      'title': InputFormTemplate._titleController.text,
+                      'content': InputFormTemplate._contentController.text,
+                      'item': InputFormTemplate.item,
+                      'place': InputFormTemplate.place,
+                      'date': InputFormTemplate._dateController.text,
+                      'detail': InputFormTemplate._detailController.text,
+                      'createAt': Timestamp.now(),
+                      'status': false
+                    });
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
+                  }
+                  // 분실물이 선택된 경우
+                  else {
+                    firestore.collection("Losts").add({
+                      for(int i=0 ; i<length ; i++)
+                        'picture' + i.toString() : InputFormTemplate._profilePictures[i].storageReference.fullPath,
+                      'title': InputFormTemplate._titleController.text,
+                      'content': InputFormTemplate._contentController.text,
+                      'item': InputFormTemplate.item,
+                      'place': InputFormTemplate.place,
+                      'date': InputFormTemplate._dateController.text,
+                      'detail': InputFormTemplate._detailController.text,
+                      'createAt': Timestamp.now(),
+                      'status': false
+                    });
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
                 }
                 else {
+                  // 글을 작성하기 위한 form에 입력된 data 형식이 유효하지 않은 경우
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('글을 등록하기에 정보가 충분하지 않습니다.')));
                 }
