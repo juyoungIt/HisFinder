@@ -155,7 +155,7 @@ class InputFormTemplate extends State<InputForm> {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다. 메일주소를 인증하세요.')));
                         }
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => SigninPage()),
                         );

@@ -1,12 +1,11 @@
+// The first page of login
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 import 'package:untitled/start/Signup.dart';
-import 'package:untitled/write/write.dart';
-
 import 'PasswordReset.dart';
-import 'TestHome.dart';
 
 class SigninPage extends StatelessWidget {
   @override
@@ -179,7 +178,7 @@ class InputFormTemplate extends State<InputForm> {
                         } else {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text('로그인 되었습니다')));
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => MyHomePage()),
                           );
@@ -233,7 +232,10 @@ class GuestLogin extends StatelessWidget {
         ),
         // 게스트 로그인 기능으로 연결되는 버튼 부분
         IconButton(
-          onPressed: () { },
+          onPressed: () {
+            // 게스트 로그인에 대한 로직이 여기로 들어가야 함
+            // 게스트 로그인의 경우 권한 설정을 분명하게 해야할 필요가 있음
+          },
           icon: Image.asset('assets/guest.png', scale: 4),
         )
       ],
@@ -259,7 +261,7 @@ class GoToSignUp extends StatelessWidget {
                 ),
               ),
               TextButton(onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SignupPage()),
                 );

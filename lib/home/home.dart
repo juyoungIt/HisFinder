@@ -1,3 +1,5 @@
+// 로그인 후 기본적으로 나타나는 홈페이지
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/write/write.dart';
@@ -20,6 +22,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      switch (_selectedIndex) {
+        case 0: //  찾았어요
+          break;
+        case 1: // 찾아요
+          break;
+        case 2: // 글쓰기
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WritePage()),
+          );
+          break;
+        case 3: // 채팅
+        case 4: // user info
+      }
     });
   }
 
@@ -58,15 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     height: 150.0,
                     child: NotificationListener<ScrollNotification>(onNotification: (ScrollNotification notification) {
-                        /*
+                      /*
                          스크롤 할때 발생되는 이벤트
                          해당 함수에서 어느 방향으로 스크롤을 했는지를 판단해
                          리스트 가장 밑에서 아래서 위로 40프로 이상 스크롤 했을때
                          서버에서 데이터를 추가로 가져오는 루틴이 포함됨.
                         */
-                        scrollNotification(notification);
-                        return false;
-                      },
+                      scrollNotification(notification);
+                      return false;
+                    },
                       child: RefreshIndicator(
                         /*
                          리스트에 위에서 아래로 스크롤 하게되면 onRefresh 이벤트 발생
@@ -84,20 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               return HeaderTile(); // 검색창
                             else {
                               // 아니라면
-                              switch (_selectedIndex) {
-                                case 0: //  찾았어요
-                                  return DataTile(items[i - 1]);
-                                case 1: // 찾아요
-                                  return DataTile(items[i - 1]);
-                                case 2: // 글쓰기
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => WritePage()),
-                                  );
-                                  break;
-                                case 3: // 채팅
-                                case 4: // user info
-                              }
                             }
                             return Container(height: 0);
                           },
@@ -168,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // 새로운 데이터를 로딩하는 부분
   Future<void> requestNew() async {
-    // 초기 데이터 세팅.
+    // 초기 데이터 세팅 - 초기 데이터를 여기에 세팅하는 과정이 필요함
     nextPage = 0; // 현재 페이지
     items.clear(); // 리스트 초기화
     setState(() {

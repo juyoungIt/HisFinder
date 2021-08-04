@@ -25,7 +25,7 @@ class MyAppTemplate extends State<MyApp> {
     // material 디자인을 사용하는 애플리케이션을 생성하겠음을 의미
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 상단 베너 삭제
-      home: WritePage(), // 앱의 기본경로를 위한 widget
+      home: SigninPage(), // 앱의 기본경로를 위한 widget
     );
   }
 }
