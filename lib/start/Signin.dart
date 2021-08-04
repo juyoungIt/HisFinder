@@ -1,7 +1,4 @@
-// The first page of login
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 import 'package:untitled/start/Signup.dart';
@@ -15,19 +12,18 @@ class SigninPage extends StatelessWidget {
         body: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Container(color: Colors.white), // 배경색상 변경을 용이하게 하기 위한 목적으로 추가
-            // 로그인 정보를 입력하는 form을 column으로 구성
+            // set the background color
+            Container(color: Colors.white),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                LogoText(), // 서비스 로고
-                // 로그인 정보 입력 form
+                LogoText(),
                 Padding(
                   padding: EdgeInsets.all(size.width*0.06),
                   child: InputForm(),
                 ),
-                GuestLogin(), // 게스트 로그인과 관련된 컴포넌트를 삽입하는 부분
+                GuestLogin(),
               ],
             ),
             GoToSignUp(),
@@ -66,32 +62,6 @@ class InputFormTemplate extends State<InputForm> {
   final TextEditingController _sidController = TextEditingController(); // 학번 입력 form에 대한 controller
   final TextEditingController _pwController = TextEditingController();  // password 입력 form에 대한 controller
   final _formKey = GlobalKey<FormState>();
-
-  // Set default `_initialized` and `_error` state to false
-  bool _initialized = false;
-  bool _error = false;
-
-  // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      await Firebase.initializeApp();
-      setState(() {
-        _initialized = true;
-      });
-    } catch(e) {
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    initializeFlutterFire();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +136,7 @@ class InputFormTemplate extends State<InputForm> {
                     if (_formKey.currentState!.validate()) {
                       try {
                         // 로그인을 시도함
+                        // 사용되지 않은 변수를 어떻게 사용해야 하는 것인지에 대한 조사가 필요할 듯 함
                         UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: _sidController.text + "@handong.edu",
                             password: _pwController.text

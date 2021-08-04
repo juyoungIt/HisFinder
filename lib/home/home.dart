@@ -1,5 +1,3 @@
-// 로그인 후 기본적으로 나타나는 홈페이지
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/write/write.dart';
@@ -33,8 +31,8 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(builder: (context) => WritePage()),
           );
           break;
-        case 3: // 채팅
-        case 4: // user info
+        case 3: // 채팅 리스트로 이어지는 로직이 들어가야 함
+        case 4: // 사용자 정보로 이어지는 로직이 들어가야 함
       }
     });
   }

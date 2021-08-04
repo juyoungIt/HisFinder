@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,19 +5,43 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class DataContainer {
+  int _segmented = 0;
+  late String _item;
+  late String _place;
+
+  // setter & getter
+  void setSegmented(int segmented) {
+    this._segmented = segmented;
+  }
+  void setItem(String item) {
+    this._item = item;
+  }
+  void setPlace(String place) {
+    this._place = place;
+  }
+  int getSegmented() {
+    return this._segmented;
+  }
+  String getItem() {
+    return this._item;
+  }
+  String getPlace() {
+    return this._place;
+  }
+}
+
 class WritePage extends StatelessWidget {
-  // firebase에 대한 instacne
+  // firebase 에 대한 instance
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  // Form으로부터 전달되는 정보들을 관리하기 위한 Controller들의 선언
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // form에 대한 접근을 위해 사용되는 key
+  // Form 으로부터 전달되는 정보들을 관리하기 위한 Controller 들의 선언
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // form 에 대한 접근을 위해 사용되는 key
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
-  int _segmented = 0;
-  var _item;
-  var _place;
-  List<UploadJob> _profilePictures = [];
+  final DataContainer dataContainer = DataContainer(); // segment, item, place 를 담는 container class
+  final List<UploadJob> _profilePictures = [];
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +57,18 @@ class WritePage extends StatelessWidget {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                // 여기서 database에 데이터를 주입하는 로직이 들어가야 함
                 if (_formKey.currentState!.validate()) {
                   int length = (_profilePictures.length == 5) ? _profilePictures.length : _profilePictures.length-1;
 
-                  // 작성된 글의 종류에 따라서 사용하는 collection의 종류를 구분하여 데이터를 처리하는 로직
                   // 습득물이 선택된 경우
-                  if(_segmented.toString() != "1") {
+                  if(dataContainer.getSegmented() != 1) {
                     firestore.collection("Founds").add({
                       for(int i=0 ; i<length ; i++)
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
-                      'item': _item,
-                      'place': _place,
+                      'item': dataContainer.getItem(),
+                      'place': dataContainer.getPlace(),
                       'date': _dateController.text,
                       'detail': _detailController.text,
                       'createAt': Timestamp.now(),
@@ -63,8 +84,8 @@ class WritePage extends StatelessWidget {
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
-                      'item': _item,
-                      'place': _place,
+                      'item': dataContainer.getItem(),
+                      'place': dataContainer.getPlace(),
                       'date': _dateController.text,
                       'detail': _detailController.text,
                       'createAt': Timestamp.now(),
@@ -73,6 +94,7 @@ class WritePage extends StatelessWidget {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
                   }
+                  // 글이 성공적으로 작성되었으므로 홈화면으로 다시 이동
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -107,8 +129,7 @@ class WritePage extends StatelessWidget {
                         children: [
                           InputForm.init(this._formKey, this._titleController,
                               this._contentController, this._dateController, this._detailController,
-                              this._segmented, this._item, this._place, this._profilePictures
-                          ),
+                              this.dataContainer, this._profilePictures),
                         ],
                       ),
                     ),
@@ -123,31 +144,29 @@ class WritePage extends StatelessWidget {
 
 // 글에 대한 정보를 입력받는 Form Template 의 출력을 호출함
 class InputForm extends StatefulWidget {
-
   // data field (constructor의 사용을 통해서 초기화 됨)
   late final GlobalKey<FormState> _formKey; // form에 대한 접근을 위해 사용되는 key
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
   late final TextEditingController _dateController;
   late final TextEditingController _detailController;
-  late int _segmented = 0;
-  late var _item;
-  late var _place;
+  late final DataContainer dataContainer;
   late List<UploadJob> _profilePictures;
 
   // constructor
   InputForm.init(
-    GlobalKey<FormState> formKey, TextEditingController titleController, TextEditingController contentController,
-      TextEditingController dateController, TextEditingController detailController,
-      int segmented, var item, var place, List<UploadJob> profilePictures) {
+    GlobalKey<FormState> formKey, TextEditingController titleController,
+      TextEditingController contentController,
+      TextEditingController dateController,
+      TextEditingController detailController,
+      DataContainer dataContainer,
+      List<UploadJob> profilePictures) {
     this._formKey = formKey;
     this._titleController = titleController;
     this._contentController = contentController;
     this._dateController = dateController;
     this._detailController = detailController;
-    this._segmented = segmented;
-    this._item = item;
-    this._place = place;
+    this.dataContainer = dataContainer;
     this._profilePictures = profilePictures;
   }
 
@@ -155,65 +174,38 @@ class InputForm extends StatefulWidget {
   State<StatefulWidget> createState() {
     return InputFormTemplate.init(this._formKey, this._titleController,
         this._contentController, this._dateController, this._detailController,
-        this._segmented, this._item, this._place, this._profilePictures);
+        this.dataContainer, this._profilePictures);
   }
 }
 
 // 글에 대한 정보를 입력받느 Form Template 의 정보들을 호출함
 class InputFormTemplate extends State<InputForm> {
-
   // data field (constructor 를 통해서 초기화 됨)
-  late final GlobalKey<FormState> _formKey; // form에 대한 접근을 위해 사용되는 key
+  late final GlobalKey<FormState> _formKey;
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
   late final TextEditingController _dateController;
   late final TextEditingController _detailController;
-  late int _segmented = 0;
-  late var _item;
-  late var _place;
+  late final DataContainer dataContainer;
   late List<UploadJob> _profilePictures;
+  int curUploadedImages = 0; // 현재 업로드가 이뤄진 이미지의 수
 
   // constructor (주어진 data field 를 초기화 하는 역할을 수행)
   InputFormTemplate.init(
-      GlobalKey<FormState> formKey, TextEditingController titleController, TextEditingController contentController,
-      TextEditingController dateController, TextEditingController detailController,
-      int segmented, var item, var place, List<UploadJob> profilePictures) {
+      GlobalKey<FormState> formKey,
+      TextEditingController titleController,
+      TextEditingController contentController,
+      TextEditingController dateController,
+      TextEditingController detailController,
+      DataContainer dataContainer,
+      List<UploadJob> profilePictures) {
     this._formKey = formKey;
     this._titleController = titleController;
     this._contentController = contentController;
     this._dateController = dateController;
     this._detailController = detailController;
-    this._segmented = segmented;
-    this._item = item;
-    this._place = place;
+    this.dataContainer = dataContainer;
     this._profilePictures = profilePictures;
-  }
-
-  // Set default `_initialized` and `_error` state to false
-  bool _initialized = false;
-  bool _error = false;
-  int curUploadedImages = 0;
-
-  // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      await Firebase.initializeApp();
-      setState(() {
-        _initialized = true;
-      });
-    } catch(e) {
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    initializeFlutterFire();
-    super.initState();
   }
 
   @override
@@ -267,10 +259,10 @@ class InputFormTemplate extends State<InputForm> {
                       0: Text('습득물'),
                       1: Text('분실물'),
                     },
-                    groupValue: _segmented,
+                    groupValue: dataContainer.getSegmented(),
                     onValueChanged: (newValue) {
                       setState(() {
-                        _segmented = newValue as int;
+                        dataContainer.setSegmented(newValue as int);
                       });
                     }
                 ),
@@ -349,10 +341,10 @@ class InputFormTemplate extends State<InputForm> {
                     ))
                         .toList(),
                     onChanged: (label) {
-                      _item = label;
+                      dataContainer.setItem(label!);
                     },
-                    validator: (item) {
-                      if(item == null)
+                    validator: (label) {
+                      if(label == null)
                         return "분실/습득한 물건을 입력해주세요.";
                     }
                 ),
@@ -382,10 +374,10 @@ class InputFormTemplate extends State<InputForm> {
                     ))
                         .toList(),
                     onChanged: (label) {
-                      _place = label;
+                      dataContainer.setPlace(label!);
                     },
-                    validator: (place) {
-                      if(place == null)
+                    validator: (label) {
+                      if(label == null)
                         return "습득/분실 장소를 입력해주세요.";
                     }
                 ),
