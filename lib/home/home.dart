@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/user/userInfo.dart';
 import 'package:untitled/write/write.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -8,9 +9,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ScrollController _scrollController = ScrollController();
   int _selectedIndex = 0; // 현재 선택된 창 (bottom Bar)
   bool isMoreRequesting = false; //하단 인디케이터
   int nextPage = 0; //데이터 가져올 때 페이지 구분
+  double searchHeight = 0;
 
   List<Data> serverItems = []; // 더미 데이터
   List<Data> items = []; // 출력용 리스트
@@ -32,7 +35,12 @@ class _MyHomePageState extends State<MyHomePage> {
           );
           break;
         case 3: // 채팅 리스트로 이어지는 로직이 들어가야 함
-        case 4: // 사용자 정보로 이어지는 로직이 들어가야 함
+          break;
+        case 4:
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => UserInfoPage()),
+          );
       }
     });
   }
@@ -52,17 +60,20 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: MainAppBar(),
       body: Stack(
         children: [
-          Column(
-            children: <Widget>[
-              Container(
-                color: Color(0xff6990FF),
-                height: MediaQuery.of(context).size.height / 2.7,
-              ),
-              Container(
-                color: Colors.white,
-                height: MediaQuery.of(context).size.height / 2.7,
+          // background
+          Container(
+            color: Colors.white,
+          ),
+          // for search bar background
+          Container(
+            height: ((80 + searchHeight * (-1)) < 0) ? 0 : (80 + searchHeight * (-1)),
+            decoration: BoxDecoration(
+              color: Color(0xff6990FF),
+              borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(10.0),
+                  bottomLeft: Radius.circular(10.0),
               )
-            ],
+            ),
           ),
           Center(
             child: Column(
@@ -88,14 +99,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         */
                         onRefresh: requestNew,
                         child: ListView.separated(
+                          controller: _scrollController,
                           separatorBuilder: (BuildContext context, int index) {
-                            return Container(
-                                color: Colors.white, child: const Divider());
+                            // insert divider into every cell
+                            return Container(color: Colors.white, child: const Divider());
                           },
                           padding: const EdgeInsets.all(0),
                           itemBuilder: (context, int i) {
                             if (i == 0) // 0 번쨰 리스트
-                              return HeaderTile(); // 검색창
+                              return HeaderTile();// 검색창
                             else {
                               // 아니라면
                             }
@@ -106,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                            physics: AlwaysScrollableScrollPhysics()
                           */
                           physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: items.length,
+                          itemCount: items.length+1,
                         ),
                       ),
                     ),
@@ -128,9 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
 
-      // 화면 하단에 위치하는 navigation var에 대한 부분
+      // for navigation bar
       bottomNavigationBar: BottomNavigationBar(
-        //selectedIconTheme: I,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Image.asset("assets/found.png", width: 30, height: 30, scale: 2.5),
@@ -161,12 +172,12 @@ class _MyHomePageState extends State<MyHomePage> {
         showUnselectedLabels: true,
         elevation: 10,
         backgroundColor: Colors.white,
-        type: BottomNavigationBarType.fixed, // 선택 시 아이콘이 확대되는 효과를 제거함. (아이콘은 고정된 형태로 유지)
+        type: BottomNavigationBarType.fixed, // for selected animation
       ),
     );
   }
 
-  // 새로운 데이터를 로딩하는 부분
+  // load the new data
   Future<void> requestNew() async {
     // 초기 데이터 세팅 - 초기 데이터를 여기에 세팅하는 과정이 필요함
     nextPage = 0; // 현재 페이지
@@ -202,6 +213,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // 스크롤을 시작후 움직일때 발생(손가락으로 리스트를 누르고 움직이고 있을때 계속 발생)
       // 스크롤 움직인 만큼 빼준다.(notification.scrollDelta)
       _dragDistance -= notification.scrollDelta!; //스크롤 하여 이동한 거리 계산
+      setState(() {
+        searchHeight = _scrollController.offset;
+        print(searchHeight);
+      });
     } else if (notification is ScrollEndNotification) {
       // 스크롤이 끝났을때 발생(손가락을 리스트에서 움직이다가 뗐을때 발생)
 
@@ -283,35 +298,44 @@ class Data {
   }
 }
 
-// 화면 상단 검색창
+// 화면 상단 검색창을 포함하는 부분
 class HeaderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 450,
-        height: 50,
-        color: Color(0xff6990FF),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 450,
-              height: 30,
-              color: Colors.white,
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              height: 40,
               child: TextFormField(
+                // controller: , - 여기에 controller 추가하는 작업 필요함
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search, color: Color(0xff6990FF)),
+                  fillColor: Colors.white,
+                  filled: true,
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                  errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                  contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                  hintText: "잃어버린 물건을 검색해보세요!",
+                ),
                 style: TextStyle(
-                    color: Colors.black, decorationColor: Colors.black),
+                    color: Colors.black,
+                    decorationColor: Colors.black
+                ),
                 cursorColor: Colors.black,
               ),
             ),
           ),
-        ));
+        )
+    );
   }
 }
 
-// 리스트에서 각각의 record를 나타내는 부분
+// the each record of list
 class DataTile extends StatelessWidget {
-  final Data data; // 데이터에 대한 코드 부분
+  final Data data;     // 데이터에 대한 코드 부분
   DataTile(this.data); // 주어진 데이터를 바탕으로 하는 data tile 생성
 
   @override
@@ -349,6 +373,7 @@ class DataTile extends StatelessWidget {
 }
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
+
   @override
   Size get preferredSize => const Size.fromHeight(50);
 
@@ -390,11 +415,9 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-// 별도로 분리한 Appbar에 대한 코드 부분
 class AlarmAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(50);
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

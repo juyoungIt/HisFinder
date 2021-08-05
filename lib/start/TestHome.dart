@@ -13,26 +13,7 @@ class TestHomePage extends StatefulWidget {
 
 class TestHomePageTemplate extends State<TestHomePage> {
 
-  // Set default `_initialized` and `_error` state to false
-  bool _initialized = false;
-  bool _error = false;
   User? user = FirebaseAuth.instance.currentUser;
-
-  // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      await Firebase.initializeApp();
-      setState(() {
-        _initialized = true;
-      });
-    } catch(e) {
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
-    }
-  }
 
   void loadUserInfo() {
     if (user != null) {
@@ -43,12 +24,6 @@ class TestHomePageTemplate extends State<TestHomePage> {
       var emailVerified = user!.emailVerified;
       var uid = user!.uid;
     }
-  }
-
-  @override
-  void initState() {
-    initializeFlutterFire();
-    super.initState();
   }
 
   @override

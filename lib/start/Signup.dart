@@ -1,4 +1,4 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/start/Signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,21 +12,19 @@ class SignupPage extends StatelessWidget {
         body: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Container(color: Colors.white), // 배경색상 변경을 용이하게 하기 위한 목적으로 추가
-            // 로그인 정보를 입력하는 form을 column으로 구성
+            Container(color: Colors.white), // for background color changing
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                LogoText(), // 서비스 로고
-                // 로그인 정보 입력 form
+                LogoText(), // service logo (HisFinder)
                 Padding(
                   padding: EdgeInsets.all(size.width*0.06),
-                  child: InputForm(),
+                  child: InputForm(), // input form for sign in
                 ),
               ],
             ),
-            GoToSignIn(),
+            GoToSignIn(), // link button for guest login
           ],
         )
     );
@@ -41,19 +39,19 @@ class InputForm extends StatefulWidget {
 }
 
 class InputFormTemplate extends State<InputForm> {
-  final TextEditingController _sidController = TextEditingController(); // 학번 입력 form에 대한 controller
-  final TextEditingController _pwController = TextEditingController();  // password 입력 form에 대한 controller
-  final TextEditingController _pwConfController = TextEditingController(); // 비밀번호 확인을 위한 controller
+  // controller for input form field
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _sidController = TextEditingController();
+  final TextEditingController _pwController = TextEditingController();
+  final TextEditingController _pwConfController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-
     return Form(
       key: _formKey,
       child: Column(
         children: <Widget>[
-          // 학번을 입력하는 코드 부분
+          // student id input form field
           TextFormField(
               controller: _sidController,
               decoration: InputDecoration (
@@ -71,6 +69,8 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 10),
+
+          // password input form field
           TextFormField(
               obscureText: true,
               controller: _pwController,
@@ -89,6 +89,8 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 10),
+
+          // password confirm form field
           TextFormField(
               obscureText: true,
               controller: _pwConfController,
@@ -107,6 +109,8 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 20),
+
+          // the sign in button
           SizedBox(
               width: 500,
               height: 50,
@@ -126,6 +130,7 @@ class InputFormTemplate extends State<InputForm> {
                         User? user = FirebaseAuth.instance.currentUser;
                         if(user != null && !user.emailVerified) {
                           await user.sendEmailVerification();
+                          // _showAlert(title: "인증메일 발송", message: "회원가입을 위한 인증메일이 발송되었습니다.\n메일주소를 인증하세요.");
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다. 메일주소를 인증하세요.')));
                         }
@@ -133,22 +138,24 @@ class InputFormTemplate extends State<InputForm> {
                           context,
                           MaterialPageRoute(builder: (context) => SigninPage()),
                         );
-
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('너무 약한 비밀번호 입니다.')));
+                          _showAlert(title: "회원가입 실패", message: "너무 약한 비밀번호 입니다. 보안을 위해 더 강한 비밀번호를 사용해야 합니다.");
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(SnackBar(content: Text('너무 약한 비밀번호 입니다.')));
                         } else if (e.code == 'email-already-in-use') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('이미 등록된 계정 입니다.')));
+                          _showAlert(title: "회원가입 실패", message: "이미 등록된 계정 입니다. 로그인을 진행해 주세요.");
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(SnackBar(content: Text('이미 등록된 계정 입니다.')));
                         }
                       } catch (e) {
                         print(e);
                       }
                     }
                     else {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
+                      _showAlert(title: "회원가입 실패", message: "오류발생! 입력값을 확인하세요!");
+                      // ScaffoldMessenger.of(context)
+                      //     .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
                     }
                   }
               )
@@ -158,9 +165,24 @@ class InputFormTemplate extends State<InputForm> {
       ),
     );
   }
+
+  // cupertino alert
+  void _showAlert({required String title, required String message}) {
+    showCupertinoDialog(context: context, builder: (context) {
+      return CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+              isDefaultAction: true, child: Text("확인"), onPressed: () {
+            Navigator.pop(context);
+          })
+        ],
+      );
+    });
+  }
 }
 
-// 로그인창 상단에 표시되는 "HisFinder" 로고에 대해 정의한 부분
 class LogoText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -177,7 +199,6 @@ class LogoText extends StatelessWidget {
   }
 }
 
-// 로그인 페이지로 이동하는 부분에 대한 코드
 class GoToSignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,12 +6,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// for data transfer between class
 class DataContainer {
-  int _segmented = 0;
-  late String _item;
-  late String _place;
+  int _segmented = 0;  // segment bar selection value
+  late String _item;   // lost / find item
+  late String _place;  // lost / find place
 
-  // setter & getter
+  // setter
   void setSegmented(int segmented) {
     this._segmented = segmented;
   }
@@ -20,6 +22,7 @@ class DataContainer {
   void setPlace(String place) {
     this._place = place;
   }
+  // getter
   int getSegmented() {
     return this._segmented;
   }
@@ -32,35 +35,33 @@ class DataContainer {
 }
 
 class WritePage extends StatelessWidget {
-  // firebase 에 대한 instance
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  // Form 으로부터 전달되는 정보들을 관리하기 위한 Controller 들의 선언
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // form 에 대한 접근을 위해 사용되는 key
+  final FirebaseFirestore firestore = FirebaseFirestore.instance; // the instance of firebase
+  // the controller of text form fields
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
-  final DataContainer dataContainer = DataContainer(); // segment, item, place 를 담는 container class
-  final List<UploadJob> _profilePictures = [];
+  final DataContainer dataContainer = DataContainer(); // include segmented, item, place value
+  final List<UploadJob> _profilePictures = []; // store the uploaded pictures
+  final User? user = FirebaseAuth.instance.currentUser; // load the current user information
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
           title: Text("Writing"),
           centerTitle: true,
           backgroundColor: Color(0xff6990FF),
-          leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: (){Navigator.pop(context);}),
-          // 이 부분에 입력된 글을 바탕으로 DB에 값을 저장하는 동작 추가되어야 함
+          // leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: (){Navigator.pop(context);}),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  // calulate current uploaded images
                   int length = (_profilePictures.length == 5) ? _profilePictures.length : _profilePictures.length-1;
-
-                  // 습득물이 선택된 경우
+                  // found
                   if(dataContainer.getSegmented() != 1) {
                     firestore.collection("Founds").add({
                       for(int i=0 ; i<length ; i++)
@@ -72,12 +73,14 @@ class WritePage extends StatelessWidget {
                       'date': _dateController.text,
                       'detail': _detailController.text,
                       'createAt': Timestamp.now(),
-                      'status': false
+                      'status': false,
+                      'writer_email': user!.email,
+                      'writer_uid': user!.uid
                     });
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
                   }
-                  // 분실물이 선택된 경우
+                  // lost
                   else {
                     firestore.collection("Losts").add({
                       for(int i=0 ; i<length ; i++)
@@ -89,19 +92,19 @@ class WritePage extends StatelessWidget {
                       'date': _dateController.text,
                       'detail': _detailController.text,
                       'createAt': Timestamp.now(),
-                      'status': false
+                      'status': false,
+                      'writer_email': user!.email,
+                      'writer_uid': user!.uid
                     });
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
                   }
-                  // 글이 성공적으로 작성되었으므로 홈화면으로 다시 이동
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
                 }
                 else {
-                  // 글을 작성하기 위한 form에 입력된 data 형식이 유효하지 않은 경우
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('글을 등록하기에 정보가 충분하지 않습니다.')));
                 }
@@ -120,7 +123,6 @@ class WritePage extends StatelessWidget {
           padding: new EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
               children: <Widget>[
-                // 글을 입력하는 Form이 시작되는 부분
                 Container(
                   child: Expanded(
                     child: SizedBox(
@@ -142,10 +144,9 @@ class WritePage extends StatelessWidget {
   }
 }
 
-// 글에 대한 정보를 입력받는 Form Template 의 출력을 호출함
 class InputForm extends StatefulWidget {
-  // data field (constructor의 사용을 통해서 초기화 됨)
-  late final GlobalKey<FormState> _formKey; // form에 대한 접근을 위해 사용되는 key
+  // data field
+  late final GlobalKey<FormState> _formKey;
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
   late final TextEditingController _dateController;
@@ -178,9 +179,9 @@ class InputForm extends StatefulWidget {
   }
 }
 
-// 글에 대한 정보를 입력받느 Form Template 의 정보들을 호출함
+// draw the input form field
 class InputFormTemplate extends State<InputForm> {
-  // data field (constructor 를 통해서 초기화 됨)
+  // data field
   late final GlobalKey<FormState> _formKey;
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
@@ -188,9 +189,9 @@ class InputFormTemplate extends State<InputForm> {
   late final TextEditingController _detailController;
   late final DataContainer dataContainer;
   late List<UploadJob> _profilePictures;
-  int curUploadedImages = 0; // 현재 업로드가 이뤄진 이미지의 수
+  int curUploadedImages = 0; // the number of current uploaded images
 
-  // constructor (주어진 data field 를 초기화 하는 역할을 수행)
+  // constructor
   InputFormTemplate.init(
       GlobalKey<FormState> formKey,
       TextEditingController titleController,
@@ -211,6 +212,7 @@ class InputFormTemplate extends State<InputForm> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    // the object of image uploader tile (image tiles)
     final profilePictureTile = new Material(
       color: Colors.transparent,
       child: new Column(
@@ -231,7 +233,8 @@ class InputFormTemplate extends State<InputForm> {
                 minImageCount: 0,
                 maxImageCount: 5,
                 imageManipulationSettings: const ImageManipulationSettings(
-                    enableCropping: true, compressQuality: 75)),
+                    enableCropping: true, compressQuality: 75)
+            ),
             enabled: true,
           ),
         ],
@@ -244,7 +247,7 @@ class InputFormTemplate extends State<InputForm> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // 글의 종류를 선택하는 부분
+          // segment selector (lost & found)
           Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[SizedBox(
@@ -268,19 +271,18 @@ class InputFormTemplate extends State<InputForm> {
                 ),
               ),
               ]),
-
-          // 업로드할 사진을 선택하는 부분
+          // image uploader
           Column(
               children: <Widget>[profilePictureTile]
           ),
 
           Divider(thickness: 1),
-          // 글의 제목을 입력하는 부분
+          // title form field
           TextFormField(
               controller: _titleController,
               decoration: InputDecoration (
                 contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                hintText: "제목",
+                hintText: "제목 (필수)",
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -294,7 +296,7 @@ class InputFormTemplate extends State<InputForm> {
           ),
           Divider(thickness: 1),
 
-          // 글에 대한 body를 기록하는 부분 (contents)
+          // the content form field
           Container(
             height: 200,
             child: TextFormField (
@@ -303,7 +305,7 @@ class InputFormTemplate extends State<InputForm> {
                 maxLines: null,
                 decoration: InputDecoration(
                   contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                  hintText: "물건에 대한 설명을 적어주세요",
+                  hintText: "물건에 대한 설명을 적어주세요 (필수)",
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -318,80 +320,14 @@ class InputFormTemplate extends State<InputForm> {
           ),
           Divider(thickness: 1),
 
-          // 물건의 종류를 선택하는 부분
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[SizedBox(
-                width: size.width * 0.85,
-                child: DropdownButtonFormField<String>(
-                    hint: Text("물건종류"),
-                    decoration: InputDecoration (
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                    ),
-                    items: ["학생증", "일반카드(개인/세탁카드)", "에어팟, 버즈"
-                      , "화장품", "돈, 지갑", "전자기기", "악세서리", "필기구", "기타"]
-                        .map((label) => DropdownMenuItem(
-                      child: Text(label),
-                      value: label,
-                    ))
-                        .toList(),
-                    onChanged: (label) {
-                      dataContainer.setItem(label!);
-                    },
-                    validator: (label) {
-                      if(label == null)
-                        return "분실/습득한 물건을 입력해주세요.";
-                    }
-                ),
-              ),
-              ]),
-          Divider(thickness: 1),
-          // 분실/습득 장소를 선택하는 부분
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[SizedBox(
-                width: size.width * 0.85,
-                child: DropdownButtonFormField<String>(
-                    hint: Text("장소"),
-                    decoration: InputDecoration (
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                    ),
-                    items: ["현동홀", "뉴턴홀", "올네이션스홀", "느헤미야홀", "그레이스스쿨",
-                      "언어교육원", "효암채플", "코너스톤홀", "오석관", "기숙사", "학관", "기타"]
-                        .map((label) => DropdownMenuItem(
-                      child: Text(label),
-                      value: label,
-                    ))
-                        .toList(),
-                    onChanged: (label) {
-                      dataContainer.setPlace(label!);
-                    },
-                    validator: (label) {
-                      if(label == null)
-                        return "습득/분실 장소를 입력해주세요.";
-                    }
-                ),
-              ),
-              ]),
-          Divider(thickness: 1),
-          // 분실/습득한 날짜를 선택하는 부분
+          // the date form field
           TextFormField(
             controller: _dateController,
             showCursor: true,
             readOnly: true,
             decoration: InputDecoration (
               contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-              hintText: "습득/분실날짜",
+              hintText: "습득/분실날짜 (필수)",
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -418,12 +354,81 @@ class InputFormTemplate extends State<InputForm> {
             },
           ),
           Divider(thickness: 1),
-          // 분실한 물건, 장소 등에 대한 상세정보를 기록하는 부분
+
+          // the item form field (dropdown)
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[SizedBox(
+                width: size.width * 0.85,
+                child: DropdownButtonFormField<String>(
+                    hint: Text("물건종류 (필수)"),
+                    decoration: InputDecoration (
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                    items: ["학생증", "일반카드(개인/세탁카드)", "에어팟, 버즈"
+                      , "화장품", "돈, 지갑", "전자기기", "악세서리", "필기구", "기타"]
+                        .map((label) => DropdownMenuItem(
+                      child: Text(label),
+                      value: label,
+                    ))
+                        .toList(),
+                    onChanged: (label) {
+                      dataContainer.setItem(label!);
+                    },
+                    validator: (label) {
+                      if(label == null)
+                        return "분실/습득한 물건을 입력해주세요.";
+                    }
+                ),
+              ),
+              ]),
+          Divider(thickness: 1),
+
+          // the place form field (dropdown)
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[SizedBox(
+                width: size.width * 0.85,
+                child: DropdownButtonFormField<String>(
+                    hint: Text("장소 (필수)"),
+                    decoration: InputDecoration (
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                    items: ["현동홀", "뉴턴홀", "올네이션스홀", "느헤미야홀", "그레이스스쿨",
+                      "언어교육원", "효암채플", "코너스톤홀", "오석관", "기숙사", "학관", "기타"]
+                        .map((label) => DropdownMenuItem(
+                      child: Text(label),
+                      value: label,
+                    ))
+                        .toList(),
+                    onChanged: (label) {
+                      dataContainer.setPlace(label!);
+                    },
+                    validator: (label) {
+                      if(label == null)
+                        return "습득/분실 장소를 입력해주세요";
+                    }
+                ),
+              ),
+              ]),
+          Divider(thickness: 1),
+
+          // the detail information form
           TextFormField(
             controller: _detailController,
             decoration: InputDecoration(
               contentPadding: new EdgeInsets.symmetric(vertical: 1.0, horizontal: 10.0),
-              hintText: "상세정보를 적어주세요",
+              hintText: "장소에 대해서 다 자세히 설명해주세요 (선택)",
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,

@@ -14,14 +14,12 @@ class PasswordResetPage extends StatelessWidget {
         body: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Container(color: Colors.white), // 배경색상 변경을 용이하게 하기 위한 목적으로 추가
-            // 로그인 정보를 입력하는 form을 column으로 구성
+            Container(color: Colors.white),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                LogoText(), // 서비스 로고
-                // 로그인 정보 입력 form
+                LogoText(),
                 Padding(
                   padding: EdgeInsets.all(size.width*0.06),
                   child: InputForm(),
@@ -35,7 +33,6 @@ class PasswordResetPage extends StatelessWidget {
   }
 }
 
-// 로그인창 상단에 표시되는 "HisFinder" 로고에 대해 정의한 부분
 class LogoText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,7 +49,6 @@ class LogoText extends StatelessWidget {
   }
 }
 
-// 로그인 정보를 입력받는 form과 로그인 버튼에 대한 부분
 class InputForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -60,36 +56,9 @@ class InputForm extends StatefulWidget {
   }
 }
 
-// 회원가입한 이메일 정보를 입력하는 부분
 class InputFormTemplate extends State<InputForm> {
   final TextEditingController _sidController = TextEditingController(); // 학번 입력 form에 대한 controller
   final _formKey = GlobalKey<FormState>();
-
-  // Set default `_initialized` and `_error` state to false
-  bool _initialized = false;
-  bool _error = false;
-
-  // Define an async function to initialize FlutterFire
-  void initializeFlutterFire() async {
-    try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
-      await Firebase.initializeApp();
-      setState(() {
-        _initialized = true;
-      });
-    } catch(e) {
-      // Set `_error` state to true if Firebase initialization fails
-      setState(() {
-        _error = true;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    initializeFlutterFire();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +66,7 @@ class InputFormTemplate extends State<InputForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
-          // 학번을 입력하는 코드 부분
+          // student id input form field
           TextFormField(
               controller: _sidController,
               decoration: InputDecoration (
@@ -115,6 +84,7 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 10),
+          // send mail button
           SizedBox(
               width: 500,
               height: 50,
@@ -145,7 +115,6 @@ class InputFormTemplate extends State<InputForm> {
   }
 }
 
-// 애플리케이션 하단, 회원가입 페이지로 연결되는 메시지 및 버튼
 class GoToSignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

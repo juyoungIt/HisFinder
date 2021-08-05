@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 import 'package:untitled/start/Signup.dart';
@@ -144,9 +145,11 @@ class InputFormTemplate extends State<InputForm> {
                         User? user = FirebaseAuth.instance.currentUser;
                         if(user != null && !user.emailVerified) {
                           await user.sendEmailVerification();
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다. 메일주소를 인증하세요.')));
-                        } else {
+                          _showAlert(title: "인증메일 발송", message: "회원가입을 위한 인증메일이 발송되었습니다.\n메일주소를 인증하세요.");
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다.\n메일주소를 인증하세요.')));
+                        }
+                        else {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text('로그인 되었습니다')));
                           Navigator.pushReplacement(
@@ -156,17 +159,20 @@ class InputFormTemplate extends State<InputForm> {
                         }
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'user-not-found') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('사용자 정보가 존재하지 않습니다.')));
+                          _showAlert(title: "로그인 실패", message: "사용자 정보가 존재하지 않습니다.");
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(SnackBar(content: Text('사용자 정보가 존재하지 않습니다.')));
                         } else if (e.code == 'wrong-password') {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('비밀번호를 확인해주세요')));
+                          _showAlert(title: "로그인 실패", message: "비밀번호를 확인해주세요");
+                          // ScaffoldMessenger.of(context)
+                          //     .showSnackBar(SnackBar(content: Text('비밀번호를 확인해주세요')));
                         }
                       }
                     }
                     else {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
+                      _showAlert(title: "로그인 실패", message: "오류발생! 입력값을 확인하세요!");
+                      // ScaffoldMessenger.of(context)
+                      //     .showSnackBar(SnackBar(content: Text('오류발생! 입력값을 확인하세요!')));
                     }
                   }
               )
@@ -174,6 +180,21 @@ class InputFormTemplate extends State<InputForm> {
         ],
       ),
     );
+  }
+
+  // cupertino alert 을 정의하는 부분
+  void _showAlert({required String title, required String message}) {
+    showCupertinoDialog(context: context, builder: (context) {
+      return CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(isDefaultAction: true, child: Text("확인"), onPressed: () {
+            Navigator.pop(context);
+          })
+        ],
+      );
+    });
   }
 }
 
