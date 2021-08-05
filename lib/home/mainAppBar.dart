@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/home/transparentRoute.dart';
+
+import 'categoryPage.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -22,7 +25,13 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
               icon: Image.asset("assets/category.png", width: 65, height: 65, scale: 2.5),
               onPressed: () {
-                // Category button Action
+                Navigator.of(context).push(
+                    TransparentRoute(builder: (BuildContext context) => CategoryPage())
+                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => CategoryPage()),
+                // );
               }),
         ),
         actions: [
@@ -35,6 +44,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                 }),
           ),
         ],
-        backgroundColor: Color(0xff6990FF));
+        backgroundColor: Color(0xff6990FF)
+    );
   }
 }

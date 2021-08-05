@@ -51,7 +51,15 @@ class WritePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text("Writing"),
+          title: Text(
+              "Writing",
+              style: TextStyle(
+                fontFamily: 'avenir',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w400,
+              ),
+            textScaleFactor: 1.4
+          ),
           centerTitle: true,
           backgroundColor: Color(0xff6990FF),
           // leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: (){Navigator.pop(context);}),
@@ -428,7 +436,7 @@ class InputFormTemplate extends State<InputForm> {
             controller: _detailController,
             decoration: InputDecoration(
               contentPadding: new EdgeInsets.symmetric(vertical: 1.0, horizontal: 10.0),
-              hintText: "장소에 대해서 다 자세히 설명해주세요 (선택)",
+              hintText: "장소에 대해서 더 자세히 설명해주세요 (선택)",
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
               enabledBorder: InputBorder.none,
