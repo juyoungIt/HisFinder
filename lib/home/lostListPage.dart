@@ -1,22 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/home/chatListAppBar.dart';
-import 'package:untitled/home/userInfo.dart';
-import 'package:untitled/home/userInfoAppBar.dart';
-import 'package:untitled/write/write.dart';
 
-import 'foundListPage.dart';
-import 'lostListPage.dart';
-import 'mainAppBar.dart';
-
-class MyHomePage extends StatefulWidget {
+class LostListPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _LostListPageState createState() => _LostListPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _LostListPageState extends State<LostListPage> {
   final ScrollController _scrollController = ScrollController();
-  int _selectedIndex = 0;
   bool isMoreRequesting = false;
   int nextPage = 0;
   double searchHeight = 0; // the height of the search bar
@@ -25,99 +16,86 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Data> items = []; // 출력용 리스트
   double _dragDistance = 0; // 드레그 거리를 체크하기 위함 (기준: 50%)
 
-  // appBar List
-  List<PreferredSizeWidget> _appBarList = <PreferredSizeWidget>[
-    MainAppBar(),
-    MainAppBar(),
-    MainAppBar(),
-    ChatListAppBar(),
-    UserInfoAppBar()
-  ];
-
-  // contentList
-  List<Widget> _widgetOptions = <Widget>[
-    LostListPage(),
-    FoundListPage(),
-    Container(), // 글쓰기
-    Container(), // 채팅
-    UserInfoPage()
-  ];
-
-  // 선택되는 index에 따라서 현재 인덱스 값을 업데이트
-  void onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // navigation 을 적용해야하는 경우 해당 로직을 사용할 것
-      switch (_selectedIndex) {
-        case 0: //  찾았어요
-          break;
-        case 1: // 찾아요
-          break;
-        case 2: // 글쓰기
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WritePage()),
-          );
-          break;
-        case 3:
-          break;
-        case 4:
-          break;
-      }
-    });
-  }
-
-  @override
-  initState() {
-    //서버의 가상데이터(더미 데이터) 추가 => backend system 에서는 지워도 됨.
-    // for (var i = 0; i < mydata.length; i++)
-    //   serverItems.add(mydata[i]);
-    super.initState();
-    requestNew(); // 데이터 베이스 서버로부터 추가된 데이터를 요청하는 부분
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _appBarList.elementAt(_selectedIndex),
-      body: _widgetOptions.elementAt(_selectedIndex),
-      // for navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/found.png", width: 30, height: 30, scale: 2.5),
-            label: '주웠어요',
+    return Stack(
+      children: [
+        Container(color: Colors.white),
+        Container(
+          height: ((80 + searchHeight * (-1)) < 0) ? 0 : (80 + searchHeight * (-1)),
+          decoration: BoxDecoration(
+              color: Color(0xff6990FF),
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(10.0),
+                bottomLeft: Radius.circular(10.0),
+              )
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/lost.png", width: 30, height: 30, scale: 2.5),
-            label: '찾아요',
+        ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  height: 150.0,
+                  child: NotificationListener<ScrollNotification>(onNotification: (ScrollNotification notification) {
+                    /*
+                         스크롤 할때 발생되는 이벤트
+                         해당 함수에서 어느 방향으로 스크롤을 했는지를 판단해
+                         리스트 가장 밑에서 아래서 위로 40프로 이상 스크롤 했을때
+                         서버에서 데이터를 추가로 가져오는 루틴이 포함됨.
+                        */
+                    scrollNotification(notification);
+                    return false;
+                  },
+                    child: RefreshIndicator(
+                      /*
+                         리스트에 위에서 아래로 스크롤 하게되면 onRefresh 이벤트 발생
+                         서버에서 새로운(최신) 데이터를 가져오는 함수 구현
+                        */
+                      onRefresh: requestNew,
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        separatorBuilder: (BuildContext context, int index) {
+                          // insert divider into every cell
+                          return Container(color: Colors.white, child: const Divider());
+                        },
+                        padding: const EdgeInsets.all(0),
+                        itemBuilder: (context, int i) {
+                          if (i == 0) // 0 번쨰 리스트
+                            return HeaderTile();// 검색창
+                          else {
+                            // 아니라면
+                          }
+                          return Container(height: 0);
+                        },
+                        /*
+                           리스트의 데이터가 적어 스크롤이 생성되지 않아 스크롤 이벤트를 받을 수 없을수 있기 때문에 아래의 옵션을 추가함.
+                           physics: AlwaysScrollableScrollPhysics()
+                          */
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: items.length+1,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              /*
+                 추가 데이터 가져올때 하단 효과 표시 용
+                */
+              Container(
+                height: isMoreRequesting ? 50.0 : 0,
+                color: Colors.white,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/write.png", width: 30, height: 30, scale: 2.5),
-            label: '글쓰기',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/chat.png", width: 30, height: 30, scale: 2.5),
-            label: '채팅방',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset("assets/user.png", width: 30, height: 30, scale: 2.5),
-            label: '내계정',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xff6990FF),
-        unselectedItemColor: Colors.black,
-        selectedIconTheme: IconThemeData(color: Color(0xff6990FF)),
-        onTap: onItemTapped,
-        showUnselectedLabels: true,
-        elevation: 10,
-        backgroundColor: Colors.white,
-        type: BottomNavigationBarType.fixed, // for selected animation
-      ),
+        ),
+      ],
     );
   }
-
   // load the new data
   Future<void> requestNew() async {
     // 초기 데이터 세팅 - 초기 데이터를 여기에 세팅하는 과정이 필요함
@@ -308,31 +286,6 @@ class DataTile extends StatelessWidget {
           onTap: () {
             // click action
           }),
-    );
-  }
-}
-
-class AlarmAppBar extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Size get preferredSize => const Size.fromHeight(50);
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return AppBar(
-      title: Text(
-        'Alarm',
-        style: TextStyle(
-          fontFamily: 'avenir',
-          fontStyle: FontStyle.italic,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      leading: Image.asset(
-        'src/back.png',
-        width: 37,
-        height: 69,
-        scale: 3,
-      ),
     );
   }
 }

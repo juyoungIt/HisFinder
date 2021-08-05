@@ -7,21 +7,6 @@ class UserInfoPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            elevation: 0,
-            backgroundColor: const Color(0xff6990FF),
-            centerTitle: true,
-            title:
-            Text("MyPage", style: TextStyle(
-              fontFamily: 'avenir',
-              fontWeight: FontWeight.
-              w500
-              ,
-              color: Colors.
-              white,
-            ),
-            )
-        ),
         body: BodyWidget()
     );
   }
