@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/notification/notificationList.dart';
 
 class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -23,7 +24,10 @@ class ChatListAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: IconButton(
                 icon: Image.asset("assets/notice.png", width: 73, height: 76, scale: 3),
                 onPressed: () {
-                  // Bell Button Action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NotificationListPage()),
+                  );
                 }),
           ),
         ],

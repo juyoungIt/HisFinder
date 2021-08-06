@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,12 @@ class _FoundListPageState extends State<FoundListPage> {
   List<Data> serverItems = []; // 더미 데이터
   List<Data> items = []; // 출력용 리스트
   double _dragDistance = 0; // 드레그 거리를 체크하기 위함 (기준: 50%)
+
+  @override
+  initState() {
+    super.initState();
+    requestNew();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +60,7 @@ class _FoundListPageState extends State<FoundListPage> {
                          리스트에 위에서 아래로 스크롤 하게되면 onRefresh 이벤트 발생
                          서버에서 새로운(최신) 데이터를 가져오는 함수 구현
                         */
+                      color: Color(0xff6990FF),
                       onRefresh: requestNew,
                       child: ListView.separated(
                         controller: _scrollController,
@@ -87,7 +95,7 @@ class _FoundListPageState extends State<FoundListPage> {
                 height: isMoreRequesting ? 50.0 : 0,
                 color: Colors.white,
                 child: Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(color: Color(0xff6990FF)),
                 ),
               ),
             ],
@@ -152,7 +160,6 @@ class _FoundListPageState extends State<FoundListPage> {
           setState(() {
             isMoreRequesting = true; // 프로그래스 서클 활성화
           });
-
           requestMore().then((value) {
             // 서버에서 데이터 가져온다.
             setState(() {

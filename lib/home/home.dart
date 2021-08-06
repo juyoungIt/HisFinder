@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     UserInfoPage()
   ];
 
-  // 선택되는 index에 따라서 현재 인덱스 값을 업데이트
+  // 선택되는 index 에 따라서 현재 인덱스 값을 업데이트
   void onItemTapped(int index) {
     setState(() {
       _prevSelectedIndex = _curSelectedIndex; // backup the index
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: _appBarList.elementAt(_curSelectedIndex),
       body: _widgetOptions.elementAt(_curSelectedIndex),
-      // for navigation bar
+      // for navigation bar - 여기도 모듈화가 가능하면 시도하는 걸로 합시다...
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -119,31 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 10,
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed, // for selected animation
-      ),
-    );
-  }
-}
-
-class AlarmAppBar extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Size get preferredSize => const Size.fromHeight(50);
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return AppBar(
-      title: Text(
-        'Alarm',
-        style: TextStyle(
-          fontFamily: 'avenir',
-          fontStyle: FontStyle.italic,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      leading: Image.asset(
-        'src/back.png',
-        width: 37,
-        height: 69,
-        scale: 3,
       ),
     );
   }
