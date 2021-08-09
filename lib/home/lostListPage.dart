@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +14,10 @@ class _LostListPageState extends State<LostListPage> {
   int nextPage = 0;
   double searchHeight = 0; // the height of the search bar
 
-  List<Data> serverItems = []; // 더미 데이터
-  List<Data> items = []; // 출력용 리스트
+  List<DocumentSnapshot> serverItems = []; // 더미 데이터
+  List<DocumentSnapshot> items = []; // 출력용 리스트
   double _dragDistance = 0; // 드레그 거리를 체크하기 위함 (기준: 50%)
+  late QuerySnapshot postQuery; // 데이터를 가져오기 위한 snapshot
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +69,7 @@ class _LostListPageState extends State<LostListPage> {
                           if (i == 0) // 0 번쨰 리스트
                             return HeaderTile();// 검색창
                           else {
-                            // 아니라면
+                            return _buildPostTile(context, items[i]);
                           }
                           return Container(height: 0);
                         },
@@ -75,7 +78,7 @@ class _LostListPageState extends State<LostListPage> {
                            physics: AlwaysScrollableScrollPhysics()
                           */
                         physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: items.length+1,
+                        itemCount: items.length,
                       ),
                     ),
                   ),
@@ -97,10 +100,22 @@ class _LostListPageState extends State<LostListPage> {
       ],
     );
   }
+
+  // load the new data
+  void loadData() async {
+    FirebaseFirestore firebase = FirebaseFirestore.instance;
+    var ref = firebase.collection('Losts');
+    await ref.get().then((value) {
+      postQuery = value;
+    });
+    serverItems.addAll(postQuery.docs);
+  }
+
   // load the new data
   Future<void> requestNew() async {
     // 초기 데이터 세팅 - 초기 데이터를 여기에 세팅하는 과정이 필요함
     nextPage = 0; // 현재 페이지
+    loadData();
     items.clear(); // 리스트 초기화
     setState(() {
       items += serverItems.sublist(nextPage * 10, (nextPage * 10) + 10); // 10개의 record item을 로딩함
@@ -189,6 +204,65 @@ class _LostListPageState extends State<LostListPage> {
       nextPage += 1; // 다음을 위해 페이지 증가
     });
     // return await Future.delayed(Duration(milliseconds: 1000)); // 가상으로 잠시 지연 줌
+  }
+  Widget _buildPostTile(BuildContext context, DocumentSnapshot post) {
+
+    String title = post.get('title').toString();
+    String date = post.get('date').toString();
+    // String content = post['content'];
+    String createAt = "";
+    if(post.get('date').toString().contains('오전'))
+      createAt = post.get('date').toString().split('오전')[0];
+    else
+      createAt = post.get('date').toString().split('오후')[0];
+    String item = post.get('item').toString();
+    String picture = post.get('picture0').toString();
+    String place = post.get('place').toString();
+    // String type = post['type'];
+
+    // download image file from the firebase storage
+    Future<String> downloadURL(String path) async {
+      String downloadURL = await FirebaseStorage.instance
+          .ref(path)
+          .getDownloadURL().toString();
+      // Within your widgets:
+      // Image.network(downloadURL);
+      return downloadURL;
+    }
+
+    return Container(
+      color: Colors.white,
+      child: ListTile(
+          leading: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Icon(
+                  Icons.image,
+                  size: 50,
+                ),
+              )
+          ),
+          title: Text(title),
+          // 향후 이 부분이 글의 종류에 따라서 습득, 분실로 내용이 달라질 수 있도록 구성 해야 함
+          subtitle: Text("물품 : " +
+              item +
+              '\n장소 : ' +
+              place +
+              '\n습득일 : ' +
+              date),
+          trailing: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Text(
+              createAt,
+              textScaleFactor: 0.7,
+              style: TextStyle(color: Colors.black54),
+            ),
+          ]),
+          onTap: () {
+            // click action
+          }),
+    );
   }
 }
 

@@ -25,7 +25,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
 class NotificationListAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
-  Size get preferredSize => const Size.fromHeight(50);
+  Size get preferredSize => const Size.fromHeight(65);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

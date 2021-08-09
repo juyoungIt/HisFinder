@@ -69,9 +69,9 @@ class WritePage extends StatelessWidget {
                 if (_formKey.currentState!.validate()) {
                   // calulate current uploaded images
                   int length = (_profilePictures.length == 5) ? _profilePictures.length : _profilePictures.length-1;
-                  // found
                   if(dataContainer.getSegmented() != 1) {
                     firestore.collection("Founds").add({
+                      'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
                       'title': _titleController.text,
@@ -91,6 +91,7 @@ class WritePage extends StatelessWidget {
                   // lost
                   else {
                     firestore.collection("Losts").add({
+                      'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
                       'title': _titleController.text,

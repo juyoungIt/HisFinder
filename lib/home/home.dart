@@ -38,8 +38,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // contentList
   List<Widget> _widgetOptions = <Widget>[
-    LostListPage(),
     FoundListPage(),
+    LostListPage(),
     Container(), // 글쓰기
     Container(), // 채팅
     UserInfoPage()

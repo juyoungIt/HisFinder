@@ -22,7 +22,7 @@ class CategoryPage extends StatelessWidget {
           leading: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
             child: IconButton(
-                icon: Image.asset("assets/category.png", width: 65, height: 65, scale: 2.5),
+                icon: Image.asset("assets/category_black.png", width: 65, height: 65, scale: 2.5),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
@@ -31,7 +31,7 @@ class CategoryPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
               child: IconButton(
-                  icon: Image.asset("assets/notice.png", width: 73, height: 76, scale: 3),
+                  icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
                   onPressed: () {
                     // Bell Button Action
                   }),
@@ -60,11 +60,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                     children: <Widget>[
-                      IconButton(
-                          icon: Image.asset("assets/user.png", width: 65, height: 65, scale: 1),
-                          onPressed: () {
-                            // 데이터 선별적으로 긁어오는 로직은 여기에
-                          }
+                      SizedBox(
+                        width: 70,
+                        height: 70,
+                        child: IconButton(
+                            icon: Image.asset("assets/sid_card.png", width: 65, height: 65, scale: 1),
+                            onPressed: () {
+                              // 데이터 선별적으로 긁어오는 로직은 여기에
+                            }
+                        ),
                       ),
                       Text("학생증")
                     ]
@@ -74,11 +78,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/gen_card.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("일반카드")
                       ]
@@ -88,11 +96,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/podAndBuz.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("에어팟, 버즈")
                       ]
@@ -102,11 +114,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/electronics.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("전자기기")
                       ]
@@ -116,11 +132,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/wallet.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("지갑, 돈")
                       ]
@@ -130,11 +150,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/cosmetics.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("화장품")
                       ]
@@ -144,11 +168,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/accessory.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("악세서리")
                       ]
@@ -158,11 +186,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/writing.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("필기구")
                       ]
@@ -172,11 +204,15 @@ class CategoryPage extends StatelessWidget {
                 Container(
                   child: Column(
                       children: <Widget>[
-                        IconButton(
-                            icon: const Icon(Icons.volume_up),
-                            onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
-                            }
+                        SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: IconButton(
+                              icon: Image.asset("assets/another.png", width: 65, height: 65, scale: 1),
+                              onPressed: () {
+                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                              }
+                          ),
                         ),
                         Text("기타")
                       ]
