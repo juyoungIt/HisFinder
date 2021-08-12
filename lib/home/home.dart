@@ -76,7 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: _appBarList.elementAt(_curSelectedIndex),
       body: _widgetOptions.elementAt(_curSelectedIndex),
-      // for navigation bar - 여기도 모듈화가 가능하면 시도하는 걸로 합시다...
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
