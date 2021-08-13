@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/detail/keywordSetPage.dart';
 
 import 'editUserInfo.dart';
 
@@ -80,13 +81,10 @@ class _BodyWidget extends State<BodyWidget> {
                     ),
                     GestureDetector(
                         onTap: (){
-                          // Navigator.push(
-                          //     context,
-                          //     PageRouteBuilder(
-                          //       pageBuilder: (context, animation1, animation2) => SignIn(),
-                          //       transitionDuration: Duration(seconds: 0),
-                          //     )
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditKeywordPage()),
+                          );
                         },
                         child: Image.asset("assets/setting.png", scale: 10)
                     )

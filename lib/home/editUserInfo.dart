@@ -9,8 +9,6 @@ class EditUserInfoPage extends StatelessWidget {
   }
 }
 class MyStatefulWidget extends StatefulWidget {
-
-  // const MyStatefulWidget({Key? key}) : super(key: key);
   @override
   State<MyStatefulWidget> createState() => MyStatefulWidgetState();
 }

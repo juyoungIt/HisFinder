@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/detail/detailWriting.dart';
+import 'package:skeleton_text/skeleton_text.dart';
 
 // 습득물 관련 페이지를 완성하는 부분
 class FoundListPage extends StatefulWidget {
@@ -23,8 +24,6 @@ class _FoundListPageState extends State<FoundListPage> {
   List<DocumentSnapshot> items = [];       // 화면에 출력되는 record 를 저장하는 부분
 
   List<WriteData> writeDatas = []; // 실질적으로 사용할 수 있는 data의 리스트
-
-  String resultPath = "";
 
   @override
   initState() {
@@ -75,8 +74,8 @@ class _FoundListPageState extends State<FoundListPage> {
                             return writeRecordTile(context, items[index-1], index);
                           }
                         },
-                        // physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: items.length
+                        physics: ClampingScrollPhysics(),
+                        itemCount: writeDatas.length
                       ),
                     ),
                   ),
@@ -120,8 +119,7 @@ class _FoundListPageState extends State<FoundListPage> {
       String item = items[i].get('item').toString();
       String place = items[i].get('place').toString();
       String date = items[i].get('date').toString();
-      String picture = await getImagePath(items[i].get('picture0').toString());
-      WriteData writeData = WriteData(title, item, place, date, picture);
+      WriteData writeData = WriteData(title, item, place, date);
       writeDatas.add(writeData);
     }
   }
@@ -145,8 +143,7 @@ class _FoundListPageState extends State<FoundListPage> {
       String item = items[nextDataPosition + i].get('item').toString();
       String place = items[nextDataPosition + i].get('place').toString();
       String date = items[nextDataPosition + i].get('date').toString();
-      String picture = await getImagePath(items[nextDataPosition + i].get('picture0').toString());
-      WriteData writeData = WriteData(title, item, place, date, picture);
+      WriteData writeData = WriteData(title, item, place, date);
       writeDatas.add(writeData);
     }
   }
@@ -164,9 +161,9 @@ class _FoundListPageState extends State<FoundListPage> {
     else if (notification is ScrollUpdateNotification) {
       _dragDistance -= notification.scrollDelta!;
       // 검색바를 위한 부분
-      setState(() {
-        searchHeight = _scrollController.offset;
-      });
+      // setState(() {
+      //   searchHeight = _scrollController.offset;
+      // });
     }
     else if (notification is ScrollEndNotification) {
       var percent = _dragDistance / (containerExtent);
@@ -188,68 +185,155 @@ class _FoundListPageState extends State<FoundListPage> {
   // 이미지를 다운로드하는 링크를 얻음
   Future<String> getImagePath(String path) async {
     Reference reference = FirebaseStorage.instance.ref(path);
-    resultPath = await reference.getDownloadURL();
+    String resultPath = await reference.getDownloadURL();
     return resultPath;
   }
 
   Widget writeRecordTile(BuildContext context, DocumentSnapshot snapshot, int index) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MyDetail(snapshot)),
-        );
-      },
-      child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                child: Image.network(
-                  writeDatas[index-1].picture,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 100,
-                  padding: const EdgeInsets.only(left: 20, top: 2),
-                  alignment: Alignment.centerLeft,
-                  child: Column(
+    return FutureBuilder(
+      future: getImagePath(snapshot.get('picture0').toString()),
+      builder: (BuildContext context, AsyncSnapshot<String> snap) {
+        if(snap.connectionState == ConnectionState.done) {
+          if(snap.hasData) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyDetail(snapshot)),
+                );
+              },
+              child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        writeDatas[index-1].title,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15),
+                      ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: Image.network(
+                          snap.data.toString(),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        "물품 " + writeDatas[index-1].item,
-                        style: TextStyle(
-                            fontSize: 12, color: Color(0xff999999)),
-                      ),
-                      Text(
-                        "장소 " + writeDatas[index-1].place,
-                        style: TextStyle(
-                            fontSize: 12, color: Color(0xff999999)),
-                      ),
-                      Text(
-                        "습득일 " + writeDatas[index-1].date,
-                        style: TextStyle(
-                            fontSize: 12, color: Color(0xff999999)),
-                      ),
+                      Expanded(
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.only(left: 20, top: 2),
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                writeDatas[index-1].title,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                "물품 " + writeDatas[index-1].item,
+                                style: TextStyle(
+                                    fontSize: 12, color: Color(0xff999999)),
+                              ),
+                              Text(
+                                "장소 " + writeDatas[index-1].place,
+                                style: TextStyle(
+                                    fontSize: 12, color: Color(0xff999999)),
+                              ),
+                              Text(
+                                "습득일 " + writeDatas[index-1].date,
+                                style: TextStyle(
+                                    fontSize: 12, color: Color(0xff999999)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
+                  )
+              ),
+            );
+          }
+          else if(snap.hasError) {
+            print(snap.error.toString());
+            return Text("Unexpected Error Occured...");
+          }
+          else {
+            return CircularProgressIndicator();
+          }
+        }
+        else if(snap.connectionState == ConnectionState.waiting) {
+          return Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: SkeletonAnimation(
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Colors.grey[300]),
+                      ),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: SkeletonAnimation(
+                      child: Container(
+                        height: 100,
+                        padding: const EdgeInsets.only(left: 20, top: 2),
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 300,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.grey[300]),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 10, bottom: 10),
+                              child: Container(
+                                width: 70,
+                                height: 15,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Colors.grey[300]),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Container(
+                                width: 70,
+                                height: 15,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Colors.grey[300]),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  )
+                ],
               )
-            ],
-          )
-      ),
+          );
+        }
+        else if(snap.connectionState == ConnectionState.active) {
+          return Text("ConnectionState = active");
+        }
+        else {
+          return Text("Error! - Network Failure...");
+        }
+      }
     );
   }
 }
@@ -294,7 +378,6 @@ class WriteData {
   late String item;
   late String place;
   late String date;
-  late String picture;
 
-  WriteData(this.title, this.item, this.place, this.date, this.picture);
+  WriteData(this.title, this.item, this.place, this.date);
 }

@@ -39,6 +39,7 @@ dependencies:
   cloud_firestore: ^2.4.0
   flutter_launcher_icons: ^0.9.1
   carousel_slider: ^4.0.0
+  skeleton_text: ^3.0.0
 
 dev_dependencies:
   flutter_native_splash: ^1.1.7+1
