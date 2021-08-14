@@ -239,16 +239,18 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
     }
     else if (notification is ScrollEndNotification) {
       var percent = _dragDistance / (containerExtent);
-      if (percent <= -0.0) {
-        if (notification.metrics.maxScrollExtent <= notification.metrics.pixels) {
-          setState(() {
-            isMoreRequesting = true;
-          });
-          requestMore().then((value) {
+      if(items.length < serverItems.length) {
+        if (percent <= -0.0) {
+          if (notification.metrics.maxScrollExtent <= notification.metrics.pixels) {
             setState(() {
-              isMoreRequesting = false; //서클 비활성화
+              isMoreRequesting = true;
             });
-          });
+            requestMore().then((value) {
+              setState(() {
+                isMoreRequesting = false; //서클 비활성화
+              });
+            });
+          }
         }
       }
     }
