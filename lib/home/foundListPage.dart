@@ -70,12 +70,11 @@ class _FoundListPageState extends State<FoundListPage> {
                         itemBuilder: (context, int index) {
                           if (index == 0)
                             return HeaderTile();
-                          else {
+                          else
                             return writeRecordTile(context, items[index-1], index);
-                          }
                         },
                         physics: ClampingScrollPhysics(),
-                        itemCount: writeDatas.length
+                        itemCount: writeDatas.length+1
                       ),
                     ),
                   ),
@@ -110,7 +109,12 @@ class _FoundListPageState extends State<FoundListPage> {
     serverItems.addAll(postQuery.docs);
 
     setState(() {
-      items += serverItems.sublist(nextPage * 10, (nextPage * 10) + 10);
+      int count;
+      if(serverItems.length < 10)
+        count = serverItems.length;
+      else
+        count = 10;
+      items += serverItems.sublist(nextPage * 10, (nextPage * 10) + count);
       nextPage += 1; // 다음을 위해 페이지 증가
     });
 

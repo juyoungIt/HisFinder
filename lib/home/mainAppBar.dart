@@ -5,6 +5,10 @@ import 'package:untitled/notification/notificationList.dart';
 import 'categoryPage.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
+  late final int selectedIndex;
+
+  MainAppBar(this.selectedIndex);
+
   @override
   Size get preferredSize => const Size.fromHeight(65);
   @override
@@ -26,13 +30,10 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
               icon: Image.asset("assets/category.png", width: 65, height: 65, scale: 2.5),
               onPressed: () {
+                String type = (selectedIndex == 0) ? "분실물" : "습득물";
                 Navigator.of(context).push(
-                    TransparentRoute(builder: (BuildContext context) => CategoryPage())
+                    TransparentRoute(builder: (BuildContext context) => CategoryPage(type))
                 );
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => CategoryPage()),
-                // );
               }),
         ),
         actions: [

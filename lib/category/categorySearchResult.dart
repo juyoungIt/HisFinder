@@ -1,17 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/detail/detailWriting.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'package:untitled/detail/detailWriting.dart';
+import 'package:untitled/notification/notificationList.dart';
 
-// 습득물 관련 페이지를 완성하는 부분
-class LostListPage extends StatefulWidget {
+class CategorySearchResultPage extends StatefulWidget {
+  late final String _type; // 분실물 or 습득물
+  late final String _item; // 분실물 항목
+
+  CategorySearchResultPage(this._type, this._item);
+
   @override
-  _LostListPageState createState() => _LostListPageState();
+  _CategorySearchResultPageState createState() => _CategorySearchResultPageState(_type, _item);
 }
 
-class _LostListPageState extends State<LostListPage> {
+class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
+  late final String _type;
+  late final String _item;
+
+  _CategorySearchResultPageState(this._type, this._item);
+
   final ScrollController _scrollController = ScrollController(); // 스크롤 관련 이벤트를 핸들링 하기 위한 컨트롤러
   bool isMoreRequesting = false; // 사용자로부터 추가적인 데이터 요청이 존재하는 지를 의미하는 변수
   int nextPage = 0; // 현재까지 로딩한 페이지의 인덱스
@@ -33,73 +42,136 @@ class _LostListPageState extends State<LostListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(color: Colors.white),
-        Container(
-          height: ((80 + searchHeight * (-1)) < 0) ? 0 : (80 + searchHeight * (-1)),
-          decoration: BoxDecoration(
-              color: Color(0xff6990FF),
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(10.0),
-                bottomLeft: Radius.circular(10.0),
-              )
-          ),
+    if(serverItems.length == 0) {
+      return Scaffold(
+        appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: Colors.black, //change your color here
+            ),
+            elevation: 0.0,
+            title: Text(
+              _type + " : " + _item,
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'avenir',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w400,
+              ),
+              textScaleFactor: 1.4,
+            ),
+            centerTitle: true,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: IconButton(
+                    icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NotificationListPage()),
+                      );
+                    }),
+              ),
+            ],
+            backgroundColor: Colors.white
         ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  // height: 150.0,
-                  child: NotificationListener<ScrollNotification> (
-                    onNotification: (ScrollNotification notification) {
-                      scrollNotification(notification);
-                      return false;
-                    },
-                    child: RefreshIndicator(
-                      color: Color(0xff6990FF),
-                      onRefresh: requestNew,
-                      child: ListView.separated(
-                          controller: _scrollController,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Container(color: Colors.white, child: const Divider());
-                          },
-                          // padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, int index) {
-                            if (index == 0)
-                              return HeaderTile();
-                            else {
-                              return writeRecordTile(context, items[index-1], index);
-                            }
-                          },
-                          physics: ClampingScrollPhysics(),
-                          itemCount: writeDatas.length+1
+        body: Text("데이터가 존재하지 않습니다.")
+      );
+    }
+    else
+    return Scaffold(
+        appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: Colors.black, //change your color here
+            ),
+            elevation: 0.0,
+            title: Text(
+              _type + " : " + _item,
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'avenir',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w400,
+              ),
+              textScaleFactor: 1.4,
+            ),
+            centerTitle: true,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: IconButton(
+                    icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NotificationListPage()),
+                      );
+                    }),
+              ),
+            ],
+            backgroundColor: Colors.white
+        ),
+        body: Stack(
+          children: [
+            Container(color: Colors.white),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      // height: 150.0,
+                      child: NotificationListener<ScrollNotification> (
+                        onNotification: (ScrollNotification notification) {
+                          scrollNotification(notification);
+                          return false;
+                        },
+                        child: RefreshIndicator(
+                          color: Color(0xff6990FF),
+                          onRefresh: requestNew,
+                          child: ListView.separated(
+                              controller: _scrollController,
+                              separatorBuilder: (BuildContext context, int index) {
+                                return Container(color: Colors.white, child: const Divider());
+                              },
+                              // padding: const EdgeInsets.all(0),
+                              itemBuilder: (context, int index) {
+                                return writeRecordTile(context, items[index], index);
+                                // if (index == 0)
+                                //   return HeaderTile();
+                                // else
+                                //   return writeRecordTile(context, items[index-1], index);
+                              },
+                              physics: ClampingScrollPhysics(),
+                              itemCount: writeDatas.length
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  Container(
+                    height: isMoreRequesting ? 50.0 : 0,
+                    color: Colors.white,
+                    child: Center(
+                      child: CircularProgressIndicator(color: Color(0xff6990FF)),
+                    ),
+                  ),
+                ],
               ),
-              Container(
-                height: isMoreRequesting ? 50.0 : 0,
-                color: Colors.white,
-                child: Center(
-                  child: CircularProgressIndicator(color: Color(0xff6990FF)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        )
     );
   }
 
   // load the new data
   Future<void> requestNew() async {
     nextPage = 0;        // 현재 페이지
+    String docName = (_type == "분실물") ? "Founds" : "Losts";
     FirebaseFirestore firebase = FirebaseFirestore.instance;
-    var ref = firebase.collection('Losts').orderBy('createAt', descending: true);
+    var ref = firebase.collection(docName).where("item", isEqualTo: _item).orderBy('createAt', descending: true);
     await ref.get().then((value) {
       postQuery = value;
     });
@@ -128,7 +200,6 @@ class _LostListPageState extends State<LostListPage> {
       writeDatas.add(writeData);
     }
   }
-
   Future<void> requestMore() async {
     int nextDataPosition = (nextPage * 10); // 10개 단위로 데이터를 읽어오기 때문
     int dataLength = 10; //가져올 데이터 크기
@@ -165,10 +236,6 @@ class _LostListPageState extends State<LostListPage> {
     }
     else if (notification is ScrollUpdateNotification) {
       _dragDistance -= notification.scrollDelta!;
-      // 검색바를 위한 부분
-      // setState(() {
-      //   searchHeight = _scrollController.offset;
-      // });
     }
     else if (notification is ScrollEndNotification) {
       var percent = _dragDistance / (containerExtent);
@@ -231,23 +298,27 @@ class _LostListPageState extends State<LostListPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  writeDatas[index-1].title,
+                                  writeDatas[index].title,
+                                  // writeDatas[index-1].title,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 15),
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  "물품 " + writeDatas[index-1].item,
+                                  "물품 " + writeDatas[index].item,
+                                  // "물품 " + writeDatas[index-1].item,
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xff999999)),
                                 ),
                                 Text(
-                                  "장소 " + writeDatas[index-1].place,
+                                  "장소 " + writeDatas[index].place,
+                                  // "장소 " + writeDatas[index-1].place,
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xff999999)),
                                 ),
                                 Text(
-                                  "습득일 " + writeDatas[index-1].date,
+                                  "습득일 " + writeDatas[index].date,
+                                  // "습득일 " + writeDatas[index-1].date,
                                   style: TextStyle(
                                       fontSize: 12, color: Color(0xff999999)),
                                 ),

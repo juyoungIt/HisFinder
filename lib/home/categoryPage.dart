@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/category/categorySearchResult.dart';
+import 'package:untitled/notification/notificationList.dart';
 
 class CategoryPage extends StatelessWidget {
+  late final String _type;
+
+  CategoryPage(this._type);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,11 @@ class CategoryPage extends StatelessWidget {
               child: IconButton(
                   icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
                   onPressed: () {
-                    // Bell Button Action
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NotificationListPage()),
+                    );
                   }),
             ),
           ],
@@ -54,6 +63,7 @@ class CategoryPage extends StatelessWidget {
               )
           ),
             child: GridView.count(
+              physics: NeverScrollableScrollPhysics(),
               crossAxisCount: 3,
               children: <Widget>[
                 // 학생증
@@ -66,7 +76,10 @@ class CategoryPage extends StatelessWidget {
                         child: IconButton(
                             icon: Image.asset("assets/sid_card.png", width: 65, height: 65, scale: 1),
                             onPressed: () {
-                              // 데이터 선별적으로 긁어오는 로직은 여기에
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "학생증")),
+                              );
                             }
                         ),
                       ),
@@ -84,7 +97,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/gen_card.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "일반카드")),
+                                );
                               }
                           ),
                         ),
@@ -102,7 +118,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/podAndBuz.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "에어팟, 버즈")),
+                                );
                               }
                           ),
                         ),
@@ -120,7 +139,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/electronics.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "전자기기")),
+                                );
                               }
                           ),
                         ),
@@ -138,7 +160,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/wallet.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "지갑, 돈")),
+                                );
                               }
                           ),
                         ),
@@ -156,7 +181,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/cosmetics.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "화장품")),
+                                );
                               }
                           ),
                         ),
@@ -174,7 +202,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/accessory.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "악세서리")),
+                                );
                               }
                           ),
                         ),
@@ -192,7 +223,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/writing.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "필기구")),
+                                );
                               }
                           ),
                         ),
@@ -210,7 +244,10 @@ class CategoryPage extends StatelessWidget {
                           child: IconButton(
                               icon: Image.asset("assets/another.png", width: 65, height: 65, scale: 1),
                               onPressed: () {
-                                // 데이터 선별적으로 긁어오는 로직은 여기에
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "기타")),
+                                );
                               }
                           ),
                         ),

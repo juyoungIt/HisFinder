@@ -16,8 +16,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final ScrollController _scrollController = ScrollController();
-  int _prevSelectedIndex = 0;
-  int _curSelectedIndex = 0;
+  int _prevSelectedIndex = 0; // 이전에 선택되었던 index
+  int _curSelectedIndex = 0;  // 현재 선택되어 있는 index
   bool isMoreRequesting = false;
   int nextPage = 0;
   double searchHeight = 0; // the height of the search bar
@@ -29,9 +29,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // appBar List
   List<PreferredSizeWidget> _appBarList = <PreferredSizeWidget>[
-    MainAppBar(),
-    MainAppBar(),
-    MainAppBar(),
+    MainAppBar(0),
+    MainAppBar(1),
+    MainAppBar(1), // 이 녀석이 사용될 일은 없음 - 최적화를 통해 제거되어야 하는 부분
     ChatListAppBar(),
     UserInfoAppBar()
   ];
@@ -82,13 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Image.asset("assets/found.png", width: 30,
                 height: 30,
                 scale: 2.5),
-            label: '주웠어요',
+            label: '분실물',
           ),
           BottomNavigationBarItem(
             icon: Image.asset("assets/lost.png", width: 30,
                 height: 30,
                 scale: 2.5),
-            label: '찾아요',
+            label: '습득물',
           ),
           BottomNavigationBarItem(
             icon: Image.asset("assets/write.png", width: 30,
