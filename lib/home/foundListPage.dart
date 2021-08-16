@@ -66,7 +66,6 @@ class _FoundListPageState extends State<FoundListPage> {
                         separatorBuilder: (BuildContext context, int index) {
                           return Container(color: Colors.white, child: const Divider());
                         },
-                        // padding: const EdgeInsets.all(0),
                         itemBuilder: (context, int index) {
                           if (index == 0)
                             return HeaderTile();
@@ -208,56 +207,61 @@ class _FoundListPageState extends State<FoundListPage> {
                   MaterialPageRoute(builder: (context) => MyDetail(snapshot, "Founds")),
                 );
               },
-              child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: Image.network(
-                          snap.data.toString(),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          padding: const EdgeInsets.only(left: 20, top: 2),
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                writeDatas[index-1].title,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 15),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                "물품 " + writeDatas[index-1].item,
-                                style: TextStyle(
-                                    fontSize: 12, color: Color(0xff999999)),
-                              ),
-                              Text(
-                                "장소 " + writeDatas[index-1].place,
-                                style: TextStyle(
-                                    fontSize: 12, color: Color(0xff999999)),
-                              ),
-                              Text(
-                                "습득일 " + writeDatas[index-1].date,
-                                style: TextStyle(
-                                    fontSize: 12, color: Color(0xff999999)),
-                              ),
-                            ],
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            child: Image.network(
+                              snap.data.toString(),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.fill,
+                            ),
                           ),
-                        ),
+                          Expanded(
+                            child: Container(
+                              height: 100,
+                              padding: const EdgeInsets.only(left: 20, top: 2),
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    writeDatas[index-1].title,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "물품 " + writeDatas[index-1].item,
+                                    style: TextStyle(
+                                        fontSize: 12, color: Color(0xff999999)),
+                                  ),
+                                  Text(
+                                    "장소 " + writeDatas[index-1].place,
+                                    style: TextStyle(
+                                        fontSize: 12, color: Color(0xff999999)),
+                                  ),
+                                  Text(
+                                    "습득일 " + writeDatas[index-1].date,
+                                    style: TextStyle(
+                                        fontSize: 12, color: Color(0xff999999)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
                       )
-                    ],
-                  )
+                  ),
+                  // Container(height: 120, color: Colors.white54)
+                ]
               ),
             );
           }
