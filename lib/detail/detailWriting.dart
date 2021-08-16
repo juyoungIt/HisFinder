@@ -6,7 +6,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:untitled/detail/myWritingAppBar.dart';
 import 'package:untitled/detail/otherWritingAppBar.dart';
-import 'package:untitled/home/home.dart';
 
 enum menu { update, del, complete }
 
@@ -32,7 +31,8 @@ class _MyDetailState extends State<MyDetail> {
   late String date = data.get('date').toString();
   late String content = data.get('content').toString();
   late String status = data.get('status').toString();
-  late String writer = data.get('writer_uid').toString();
+  late String writer = data.get('writer_email').toString();
+  late String writerID = data.get('writer_uid').toString();
   late String createAt = data.get('createAt').toDate().toString();
   late int imageCount = data.get('pictureCount');
   String resultPath = "";
@@ -70,7 +70,7 @@ class _MyDetailState extends State<MyDetail> {
   @override
   Widget build(BuildContext context) {
     String userID = FirebaseAuth.instance.currentUser!.uid.toString();
-    int appBarContext = (userID == writer) ? 0 : 1;
+    int appBarContext = (userID == writerID) ? 0 : 1;
     return Scaffold(
       appBar: _appBarList.elementAt(appBarContext),
       body: FutureBuilder(

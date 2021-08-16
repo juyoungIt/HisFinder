@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
 
@@ -50,12 +51,32 @@ class _MyWritingAppBarState extends State<MyWritingAppBar> {
             setState(() {
               switch (value) {
                 case menu.update:
-                // 글의 업데이트에 대한 로직을 여기에 넣어야 함
+                  // 글의 업데이트에 대한 로직을 여기에 넣어야 함
                   break;
                 case menu.del:
-                // 알림창을 통해서 해당 글을 삭제할 것인지를 사용자에게 다시 물어봄
+                  // 알림창을 통해서 해당 글을 삭제할 것인지를 사용자에게 다시 물어봄
+                  CupertinoAlertDialog(
+                    title: Text("게시글 삭제"),
+                    content: Text( "삭제한 내용은 복구할 수 없습니다. 정말 삭제하"),
+                    actions: <Widget>[
+                      CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                          child: Text("취소")
+                      ),
+                      CupertinoDialogAction(
+                          textStyle: TextStyle(color: Colors.red),
+                          isDefaultAction: true,
+                          onPressed: () {
 
-                // 글에 연동된 이미지를 storage 로부터 삭제하는 과정
+                          },
+                          child: Text("삭제")
+                      ),
+                    ],
+                  );
+                  // 글에 연동된 이미지를 storage 로부터 삭제하는 과정
                   for(int i=0 ; i<imageCount ; i++) {
                     Reference deleteImageRef = FirebaseStorage.instance.ref(originalPath[i]);
                     deleteImageRef.delete(); // 연결된 사진
