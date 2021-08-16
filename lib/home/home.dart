@@ -82,13 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Image.asset("assets/found.png", width: 30,
                 height: 30,
                 scale: 2.5),
-            label: '분실물',
+            label: '습득물',
           ),
           BottomNavigationBarItem(
             icon: Image.asset("assets/lost.png", width: 30,
                 height: 30,
                 scale: 2.5),
-            label: '습득물',
+            label: '분실물',
           ),
           BottomNavigationBarItem(
             icon: Image.asset("assets/write.png", width: 30,

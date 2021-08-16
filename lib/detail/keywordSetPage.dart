@@ -124,7 +124,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
               // 입력한 keyword에 대한 UI 컴포넌트를 동적으로 삽입하는 부분
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('Keyword')
+                    .collection('Keyword').where("userID", isEqualTo: userID)
                     .snapshots(),
                 builder: (context, snapshot) {
                   final docments = snapshot.data!.docs;
@@ -139,7 +139,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                   });
                   return Expanded(
                       child: ListView.builder(
-                          itemCount: int.parse(docments.single.get('keywordNum')),
+                          itemCount: 5, //int.parse(docments.single.get('keywordNum')),
                           itemBuilder: (BuildContext context, int index) {
                             // keyword 가 비어 있다면
                             if (docments.single.get('keyword$index') == "") {
@@ -147,6 +147,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                             } else {
                               //------------------------------------------------
                               // TODO : 수정 필요
+                              // timestamp를 사용하여 keyword가 변경된 시각을 기록해야 함.
                               return Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
