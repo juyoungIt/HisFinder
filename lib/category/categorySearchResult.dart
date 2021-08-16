@@ -273,7 +273,7 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MyDetail(snapshot)),
+                    MaterialPageRoute(builder: (context) => MyDetail(snapshot, _type)),
                   );
                 },
                 child: Container(

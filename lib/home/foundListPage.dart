@@ -205,7 +205,7 @@ class _FoundListPageState extends State<FoundListPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyDetail(snapshot)),
+                  MaterialPageRoute(builder: (context) => MyDetail(snapshot, "Founds")),
                 );
               },
               child: Container(

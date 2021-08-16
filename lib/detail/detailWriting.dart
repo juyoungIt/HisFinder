@@ -1,22 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'package:untitled/detail/myWritingAppBar.dart';
+import 'package:untitled/detail/otherWritingAppBar.dart';
+import 'package:untitled/home/home.dart';
 
 enum menu { update, del, complete }
 
 class MyDetail extends StatefulWidget {
   final DocumentSnapshot data;
-  MyDetail(this.data);
+  final String _type;
+
+  MyDetail(this.data, this._type);
 
   @override
-  _MyDetailState createState() => _MyDetailState(data);
+  _MyDetailState createState() => _MyDetailState(data, _type);
 }
 
 class _MyDetailState extends State<MyDetail> {
   final DocumentSnapshot data;
-  _MyDetailState(this.data);
+  final String _type;
+  _MyDetailState(this.data, this._type);
 
   late String title = data.get('title').toString();
   late String item = data.get('item').toString();
@@ -25,10 +32,12 @@ class _MyDetailState extends State<MyDetail> {
   late String date = data.get('date').toString();
   late String content = data.get('content').toString();
   late String status = data.get('status').toString();
-  late String writer = data.get('writer_email').toString();
+  late String writer = data.get('writer_uid').toString();
   late String createAt = data.get('createAt').toDate().toString();
   late int imageCount = data.get('pictureCount');
   String resultPath = "";
+  List<String> originalPath = []; // 이미지에 대한 original path를 저장
+  List<PreferredSizeWidget> _appBarList = <PreferredSizeWidget>[];
 
   // 이미지의 링크를 얻어오는 method
   Future<String> getImagePath(String path) async {
@@ -42,6 +51,7 @@ class _MyDetailState extends State<MyDetail> {
     List<String> imageUrl = [];
     for(int i=0 ; i<imageCount ; i++) {
       String path = data.get('picture'+i.toString()).toString();
+      originalPath.add(path);
       resultPath = await getImagePath(path);
       imageUrl.add(resultPath);
     }
@@ -52,58 +62,17 @@ class _MyDetailState extends State<MyDetail> {
   void initState() {
     super.initState();
     getAllImages();
-    WriteDataDetail data = WriteDataDetail(title, item, place, detail, date, content, status, writer, createAt);
+    WriteDataDetail writingData = WriteDataDetail(title, item, place, detail, date, content, status, writer, createAt);
+    _appBarList.add(MyWritingAppBar(data, _type, imageCount, originalPath));
+    _appBarList.add(OtherWritingAppBar());
   }
 
   @override
   Widget build(BuildContext context) {
+    String userID = FirebaseAuth.instance.currentUser!.uid.toString();
+    int appBarContext = (userID == writer) ? 0 : 1;
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        title: Text(
-          'HisFinder',
-          style: TextStyle(
-            fontFamily: 'avenir',
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w400,
-          ),
-          textScaleFactor: 1.4,
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xff6990FF),
-        actions: [
-          PopupMenuButton<menu>(
-            onSelected: (menu value) {
-              setState(() {
-                switch (value) {
-                  case menu.update:
-                  //update
-                    break;
-                  case menu.del:
-                    break;
-                  case menu.complete:
-                  //complete
-                    break;
-                }
-              });
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: Text('수정'),
-                value: menu.update,
-              ),
-              PopupMenuItem(
-                child: Text('삭제'),
-                value: menu.del,
-              ),
-              PopupMenuItem(
-                child: Text('완료'),
-                value: menu.complete,
-              ),
-            ],
-          ),
-        ],
-      ),
+      appBar: _appBarList.elementAt(appBarContext),
       body: FutureBuilder(
         future: getAllImages(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {

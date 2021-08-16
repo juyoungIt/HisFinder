@@ -206,7 +206,7 @@ class _LostListPageState extends State<LostListPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => MyDetail(snapshot)),
+                    MaterialPageRoute(builder: (context) => MyDetail(snapshot, 'Losts')),
                   );
                 },
                 child: Container(
