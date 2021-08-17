@@ -48,14 +48,36 @@ class _MyDetailState extends State<MyDetail> {
 
   // 모든 이미지의 path를 로딩함
   Future<List<String>> getAllImages() async {
-    List<String> imageUrl = [];
-    for(int i=0 ; i<imageCount ; i++) {
-      String path = data.get('picture'+i.toString()).toString();
-      originalPath.add(path);
-      resultPath = await getImagePath(path);
-      imageUrl.add(resultPath);
+    // 이미지가 존재하는 경우
+    if (imageCount != 0) {
+      List<String> imageUrl = [];
+      for (int i = 0; i < imageCount; i++) {
+        String path = data.get('picture' + i.toString()).toString();
+        originalPath.add(path);
+        resultPath = await getImagePath(path);
+        imageUrl.add(resultPath);
+      }
+      return imageUrl;
     }
-    return imageUrl;
+    // 이미지가 존재하지 않는 경우
+    else {
+      String path;
+      if(item == '학생증') path = 'default_images/default1.png';
+      else if(item == '일반카드(개인/세탁카드)') path = 'default_images/default2.png';
+      else if(item == '에어팟, 버즈') path = 'default_images/default3.png';
+      else if(item == '전자기기') path = 'default_images/default4.png';
+      else if(item == '돈, 지갑') path = 'default_images/default5.png';
+      else if(item == '화장품') path = 'default_images/default6.png';
+      else if(item == '악세서리') path = 'default_images/default7.png';
+      else if(item == '필기구') path = 'default_images/default8.png';
+      else path = 'default_images/default9.png';
+
+      List<String> imageUrl = [];
+      originalPath.add(path);
+      resultPath = await getImagePath(originalPath[0].toString());
+      imageUrl.add(resultPath);
+      return imageUrl;
+    }
   }
 
   @override

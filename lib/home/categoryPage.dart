@@ -99,7 +99,7 @@ class CategoryPage extends StatelessWidget {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "일반카드")),
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "일반카드(개인/세탁카드)")),
                                 );
                               }
                           ),
@@ -162,7 +162,7 @@ class CategoryPage extends StatelessWidget {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "지갑, 돈")),
+                                  MaterialPageRoute(builder: (context) => CategorySearchResultPage(_type, "돈, 지갑")),
                                 );
                               }
                           ),

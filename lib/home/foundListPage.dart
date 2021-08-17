@@ -188,15 +188,36 @@ class _FoundListPageState extends State<FoundListPage> {
   }
 
   // 이미지를 다운로드하는 링크를 얻음
-  Future<String> getImagePath(String path) async {
-    Reference reference = FirebaseStorage.instance.ref(path);
-    String resultPath = await reference.getDownloadURL();
-    return resultPath;
+  Future<String> getImagePath(DocumentSnapshot snapshot) async {
+    // 정상적으로 이미지가 존재하는 경우
+    if(snapshot.get('pictureCount') != 0) {
+      Reference reference = FirebaseStorage.instance.ref(snapshot.get('picture0').toString());
+      String resultPath = await reference.getDownloadURL();
+      return resultPath;
+    }
+    // 이미지가 존재하지 않는 경우
+    else {
+      String item = snapshot.get('item').toString();
+      String path;
+      if(item == '학생증') path = 'default_images/default1.png';
+      else if(item == '일반카드(개인/세탁카드)') path = 'default_images/default2.png';
+      else if(item == '에어팟, 버즈') path = 'default_images/default3.png';
+      else if(item == '전자기기') path = 'default_images/default4.png';
+      else if(item == '돈, 지갑') path = 'default_images/default5.png';
+      else if(item == '화장품') path = 'default_images/default6.png';
+      else if(item == '악세서리') path = 'default_images/default7.png';
+      else if(item == '필기구') path = 'default_images/default8.png';
+      else path = 'default_images/default9.png';
+      Reference reference = FirebaseStorage.instance.ref(path);
+      String resultPath = await reference.getDownloadURL();
+      return resultPath;
+    }
   }
 
   Widget writeRecordTile(BuildContext context, DocumentSnapshot snapshot, int index) {
     return FutureBuilder(
-      future: getImagePath(snapshot.get('picture0').toString()),
+      // future: getImagePath(snapshot.get('picture0').toString(), snapshot),
+      future: getImagePath(snapshot),
       builder: (BuildContext context, AsyncSnapshot<String> snap) {
         if(snap.connectionState == ConnectionState.done) {
           if(snap.hasData) {
@@ -223,7 +244,6 @@ class _FoundListPageState extends State<FoundListPage> {
                                   snap.data.toString(),
                                   width: 100,
                                   height: 100,
-                                  fit: BoxFit.fill,
                                 ),
                               ),
                               Expanded(
@@ -302,7 +322,6 @@ class _FoundListPageState extends State<FoundListPage> {
                                   snap.data.toString(),
                                   width: 100,
                                   height: 100,
-                                  fit: BoxFit.fill,
                                 ),
                               ),
                               Expanded(
