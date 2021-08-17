@@ -79,33 +79,23 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Image.asset("assets/found.png", width: 30,
-                height: 30,
-                scale: 2.5),
+            icon: Image.asset("assets/found.png", scale: 3.0),
             label: '습득물',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset("assets/lost.png", width: 30,
-                height: 30,
-                scale: 2.5),
+            icon: Image.asset("assets/lost.png", scale: 3.0),
             label: '분실물',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset("assets/write.png", width: 30,
-                height: 30,
-                scale: 2.5),
+            icon: Image.asset("assets/write.png", scale: 3.0),
             label: '글쓰기',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset("assets/chat.png", width: 30,
-                height: 30,
-                scale: 2.5),
+            icon: Image.asset("assets/chat.png", scale: 3.0),
             label: '채팅방',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset("assets/user.png", width: 30,
-                height: 30,
-                scale: 2.5),
+            icon: Image.asset("assets/user.png", scale: 3.0),
             label: '내계정',
           ),
         ],
