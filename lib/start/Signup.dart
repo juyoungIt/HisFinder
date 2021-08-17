@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/start/Signin.dart';
@@ -20,7 +21,7 @@ class SignupPage extends StatelessWidget {
                 LogoText(), // service logo (HisFinder)
                 Padding(
                   padding: EdgeInsets.all(size.width*0.06),
-                  child: InputForm(), // input form for sign in
+                  child: InputForm(size), // input form for sign in
                 ),
               ],
             ),
@@ -32,6 +33,10 @@ class SignupPage extends StatelessWidget {
 }
 
 class InputForm extends StatefulWidget {
+  final Size size;
+
+  InputForm(this.size);
+
   @override
   State<StatefulWidget> createState() {
     return InputFormTemplate();
@@ -41,9 +46,13 @@ class InputForm extends StatefulWidget {
 class InputFormTemplate extends State<InputForm> {
   // controller for input form field
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _sidController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
   final TextEditingController _pwConfController = TextEditingController();
+  bool check = false; // 닉네임이 중복확인이 되었는 지를 확인하는 부분
+  late QuerySnapshot checkQuery;
+  List<DocumentSnapshot> checkItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +60,63 @@ class InputFormTemplate extends State<InputForm> {
       key: _formKey,
       child: Column(
         children: <Widget>[
+          Row(
+            children: <Widget>[
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.65,
+                child: TextFormField(
+                    controller: _nicknameController,
+                    decoration: InputDecoration (
+                        contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                        prefixIcon: Image.asset("assets/sid.png", scale: 3),
+                        focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
+                        enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
+                        errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
+                        border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
+                        hintText: "Nickname"
+                    ),
+                    validator: (value) {
+                      if(value!.length < 1)
+                        return "닉네임을 입력해주세요.";
+                      else if(!check)
+                        return "중복확인을 진행해주세요.";
+                    }
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(right: 10)),
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  height: 53,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color(0xff6990FF), // background
+                        onPrimary: Colors.white, // foreground
+                      ),
+                      child: Text('중복확인', style: TextStyle(color: Colors.white)),
+                      onPressed: ()  async {
+                        var checkResult = FirebaseFirestore.instance.collection('Users')
+                            .where('nickname', isEqualTo: _nicknameController.text.toString());
+                        await checkResult.get().then((value) {
+                          checkQuery = value;
+                        });
+                        checkItems.clear();
+                        checkItems.addAll(checkQuery.docs);
+                        if(checkItems.length != 0) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text('이미 사용 중인 닉네임 입니다. 다른 닉네임을 사용해주세요.')));
+                        }
+                        else {
+                          check = true;
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text('사용 가능한 닉네임 입니다.')));
+                        }
+                      }
+                  )
+              ),
+            ],
+          ),
+          // nickname input form field
+          Container(height: 10),
           // student id input form field
           TextFormField(
               controller: _sidController,
@@ -89,7 +155,6 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 10),
-
           // password confirm form field
           TextFormField(
               obscureText: true,
@@ -109,7 +174,6 @@ class InputFormTemplate extends State<InputForm> {
               }
           ),
           Container(height: 20),
-
           // the sign in button
           SizedBox(
               width: 500,
@@ -119,9 +183,9 @@ class InputFormTemplate extends State<InputForm> {
                     primary: const Color(0xff6990FF), // background
                     onPrimary: Colors.white, // foreground
                   ),
-                  child: Text('Sign in', style: TextStyle(color: Colors.white)),
+                  child: Text('Join with HisFinder', style: TextStyle(color: Colors.white)),
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
+                    if (_formKey.currentState!.validate() && check) {
                       try {
                         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                             email: _sidController.text + "@handong.edu",
@@ -134,9 +198,15 @@ class InputFormTemplate extends State<InputForm> {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다. 메일주소를 인증하세요.')));
                         }
-                        Navigator.pushReplacement(
+                        // firestore에 별도로 사용자와 관련된 데이터를 저장
+                        String uid = FirebaseAuth.instance.currentUser!.uid;
+                        FirebaseFirestore.instance.collection('Users').doc(uid).set({
+                          'nickname': _nicknameController.text.toString()
+                        });
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => SigninPage()),
+                              (route) => false,
                         );
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
