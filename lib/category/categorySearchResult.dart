@@ -138,14 +138,14 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
                               },
                               // padding: const EdgeInsets.all(0),
                               itemBuilder: (context, int index) {
-                                return writeRecordTile(context, items[index], index);
-                                // if (index == 0)
-                                //   return HeaderTile();
-                                // else
-                                //   return writeRecordTile(context, items[index-1], index);
+                                // return writeRecordTile(context, items[index], index);
+                                if (index == 0)
+                                  return HeaderTile();
+                                else
+                                  return writeRecordTile(context, items[index-1], index);
                               },
                               physics: ClampingScrollPhysics(),
-                              itemCount: writeDatas.length
+                              itemCount: writeDatas.length+1
                           ),
                         ),
                       ),
@@ -269,69 +269,151 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
         builder: (BuildContext context, AsyncSnapshot<String> snap) {
           if(snap.connectionState == ConnectionState.done) {
             if(snap.hasData) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyDetail(snapshot, _type)),
-                  );
-                },
-                child: Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          child: Image.network(
-                            snap.data.toString(),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 100,
-                            padding: const EdgeInsets.only(left: 20, top: 2),
-                            alignment: Alignment.centerLeft,
-                            child: Column(
+              // 해당 글이 종료된 경우
+              if(snapshot.get('status')) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts")),
+                    );
+                  },
+                  child: Stack(
+                      children: <Widget>[
+                        Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  writeDatas[index].title,
-                                  // writeDatas[index-1].title,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 15),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  child: Image.network(
+                                    snap.data.toString(),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "물품 " + writeDatas[index].item,
-                                  // "물품 " + writeDatas[index-1].item,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Color(0xff999999)),
-                                ),
-                                Text(
-                                  "장소 " + writeDatas[index].place,
-                                  // "장소 " + writeDatas[index-1].place,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Color(0xff999999)),
-                                ),
-                                Text(
-                                  "습득일 " + writeDatas[index].date,
-                                  // "습득일 " + writeDatas[index-1].date,
-                                  style: TextStyle(
-                                      fontSize: 12, color: Color(0xff999999)),
-                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 100,
+                                    padding: const EdgeInsets.only(left: 20, top: 2),
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          writeDatas[index-1].title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          "물품 " + writeDatas[index-1].item,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "장소 " + writeDatas[index-1].place,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "습득일 " + writeDatas[index-1].date,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        SizedBox(
+                                          width: 80,
+                                          height: 20,
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius: BorderRadius.all(Radius.circular(10))
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text("완료", style: TextStyle(color: Colors.white))
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
                               ],
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                ),
-              );
+                            )
+                        ),
+                        Container(height: 120, color: Colors.white54) // 완료 글 임을 보여주기 위한 효과
+                      ]
+                  ),
+                );
+              }
+              // 해당 글이 종료되지 않은 경우
+              else {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts")),
+                    );
+                  },
+                  child: Stack(
+                      children: <Widget>[
+                        Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  child: Image.network(
+                                    snap.data.toString(),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 100,
+                                    padding: const EdgeInsets.only(left: 20, top: 2),
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          writeDatas[index-1].title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          "물품 " + writeDatas[index-1].item,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "장소 " + writeDatas[index-1].place,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "습득일 " + writeDatas[index-1].date,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                        ),
+                      ]
+                  ),
+                );
+              }
             }
             else if(snap.hasError) {
               print(snap.error.toString());
@@ -429,7 +511,7 @@ class HeaderTile extends StatelessWidget {
               child: TextFormField(
                 // controller: , - 여기에 controller 추가하는 작업 필요함
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: Color(0xff6990FF)),
+                  prefixIcon: Icon(Icons.search, color: Colors.black),
                   fillColor: Colors.white,
                   filled: true,
                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
