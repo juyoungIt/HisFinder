@@ -21,6 +21,7 @@ class MyDetail extends StatefulWidget {
 
 class _MyDetailState extends State<MyDetail> {
   final DocumentSnapshot data;
+  late DocumentSnapshot user;
   final String _type;
   _MyDetailState(this.data, this._type);
 
@@ -35,6 +36,7 @@ class _MyDetailState extends State<MyDetail> {
   late String writerID = data.get('writer_uid').toString();
   late String createAt = data.get('createAt').toDate().toString();
   late int imageCount = data.get('pictureCount');
+
   String resultPath = "";
   List<String> originalPath = []; // 이미지에 대한 original path를 저장
   List<PreferredSizeWidget> _appBarList = <PreferredSizeWidget>[];
@@ -87,6 +89,9 @@ class _MyDetailState extends State<MyDetail> {
     WriteDataDetail writingData = WriteDataDetail(title, item, place, detail, date, content, status, writer, createAt);
     _appBarList.add(MyWritingAppBar(data, _type, imageCount, originalPath));
     _appBarList.add(OtherWritingAppBar());
+    FirebaseFirestore.instance.collection('Users').doc(writerID).get().then((value) {
+      user = value;
+    });
   }
 
   @override
@@ -101,191 +106,199 @@ class _MyDetailState extends State<MyDetail> {
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if(snapshot.connectionState == ConnectionState.done) {
             if(snapshot.hasData) {
-              return ListView(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: MediaQuery.of(context).size.width,
-                      initialPage: 0,
-                      viewportFraction: 1.0,
-                      aspectRatio: 1/1,
-                      enlargeCenterPage: false,
-                      enableInfiniteScroll: false,
-                    ),
-                    items: snapshot.data!.map((item) => Container(
-                      child: Center(
-                          child: Image.network(item, width: imageSize)
+              return Stack(
+                children: <Widget>[
+                  ListView(
+                    children: <Widget>[
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: MediaQuery.of(context).size.width,
+                          initialPage: 0,
+                          viewportFraction: 1.0,
+                          aspectRatio: 1/1,
+                          enlargeCenterPage: false,
+                          enableInfiniteScroll: false,
+                        ),
+                        items: snapshot.data!.map((item) => Container(
+                          child: Center(
+                              child: Image.network(item, width: imageSize)
+                          ),
+                        )).toList(),
                       ),
-                    )).toList(),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //--------------------------------
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 2.0,
+                            ),
+                            //--------------------------------
+                            Text(
+                              createAt,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            //--------------------------------
+                            Divider(
+                              height: 20.0,
+                              thickness: 1.0,
+                            ),
+                            Row(
+                              children: [
+                                //--------------------------------
+                                Text(
+                                  '물품 : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                //--------------------------------
+                                Text(
+                                  item,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 3.5,
+                            ),
+                            Row(
+                              children: [
+                                //--------------------------------
+                                Text(
+                                  '장소 : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                //--------------------------------
+                                Text(
+                                  place,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 3.5,
+                            ),
+                            Row(
+                              children: [
+                                //--------------------------------
+                                Text(
+                                  '장소상세 : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                //--------------------------------
+                                Text(
+                                  detail,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 3.5,
+                            ),
+                            Row(
+                              children: [
+                                //--------------------------------
+                                Text(
+                                  '날짜 : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                //--------------------------------
+                                Text(
+                                  date,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Divider(
+                              height: 20.0,
+                              thickness: 1.0,
+                            ),
+                            //----------------------------------------------------
+                            Text(
+                              content,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      //----------------------------------------------------
+                      Container(height: 200),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //--------------------------------
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: AssetImage('assets/Crang.png'),
+                                radius: 15.0,
+                              ),
+                              SizedBox(width: 10),
+                              Text(user.get('nickname').toString(),
+                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          height: 2.0,
-                        ),
-                        //--------------------------------
-                        Text(
-                          createAt,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15.0,
-                            color: Colors.grey,
+                          //------------------------------------------------------------
+                          SizedBox(height: 5.0),
+                          MaterialButton(
+                            onPressed: () {},
+                            child: Text('메시지 보내기',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                            color: const Color(0xff6990FF),
+                            minWidth: 400.0,
                           ),
-                        ),
-                        //--------------------------------
-                        Divider(
-                          height: 20.0,
-                          thickness: 1.0,
-                        ),
-                        Row(
-                          children: [
-                            //--------------------------------
-                            Text(
-                              '물품 : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                            //--------------------------------
-                            Text(
-                              item,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 3.5,
-                        ),
-                        Row(
-                          children: [
-                            //--------------------------------
-                            Text(
-                              '장소 : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                            //--------------------------------
-                            Text(
-                              place,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 3.5,
-                        ),
-                        Row(
-                          children: [
-                            //--------------------------------
-                            Text(
-                              '장소상세 : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                            //--------------------------------
-                            Text(
-                              detail,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 3.5,
-                        ),
-                        Row(
-                          children: [
-                            //--------------------------------
-                            Text(
-                              '날짜 : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                            //--------------------------------
-                            Text(
-                              date,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          height: 20.0,
-                          thickness: 1.0,
-                        ),
-                        //----------------------------------------------------
-                        Text(
-                          content,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18.0,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  //----------------------------------------------------
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: AssetImage('assets/Crang.png'),
-                              radius: 15.0,
-                            ),
-                            SizedBox(width: 10),
-                            Text(writer,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        //------------------------------------------------------------
-                        SizedBox(height: 5.0),
-                        MaterialButton(
-                          onPressed: () {},
-                          child: Text('메시지 보내기',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          color: const Color(0xff6990FF),
-                          minWidth: 400.0,
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  )
+                ]
               );
             }
             else if(snapshot.hasError) {

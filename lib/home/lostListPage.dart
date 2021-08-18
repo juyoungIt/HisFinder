@@ -24,8 +24,10 @@ class _LostListPageState extends State<LostListPage> {
 
   // 데이터베이스로부터 로딩한 정보를 담는 부분
   late QuerySnapshot postQuery;            // 데이터를 가져오기 위한 Query snapshot
+  late QuerySnapshot userQuery;            // 데이터를 가져오기 위한 Query snapshot
   List<DocumentSnapshot> serverItems = []; // 서버로부터 가져오는 데이터를 담음
   List<DocumentSnapshot> items = [];       // 화면에 출력되는 record 를 저장하는 부분
+  List<DocumentSnapshot> users = []; // 로그인한 사용자의 정보를 담는 document snapshot
 
   List<WriteData> writeDatas = []; // 실질적으로 사용할 수 있는 data의 리스트
 
@@ -106,14 +108,19 @@ class _LostListPageState extends State<LostListPage> {
     nextPage = 0;        // 현재 페이지
     FirebaseFirestore firebase = FirebaseFirestore.instance;
     var ref = firebase.collection('Losts').orderBy('createAt', descending: true);
+    var user = firebase.collection('Users');
     await ref.get().then((value) {
       postQuery = value;
+    });
+    await user.get().then((value) {
+      userQuery = value;
     });
 
     serverItems.clear();
     items.clear();
     writeDatas.clear();
     serverItems.addAll(postQuery.docs);
+    users.addAll(userQuery.docs);
 
     setState(() {
       int count;

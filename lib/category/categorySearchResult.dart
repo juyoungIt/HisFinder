@@ -33,8 +33,10 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
 
   // 데이터베이스로부터 로딩한 정보를 담는 부분
   late QuerySnapshot postQuery;            // 데이터를 가져오기 위한 Query snapshot
+  late QuerySnapshot userQuery;            // 데이터를 가져오기 위한 Query snapshot
   List<DocumentSnapshot> serverItems = []; // 서버로부터 가져오는 데이터를 담음
   List<DocumentSnapshot> items = [];       // 화면에 출력되는 record 를 저장하는 부분
+  List<DocumentSnapshot> users = []; // 로그인한 사용자의 정보를 담는 document snapshot
 
   List<WriteData> writeDatas = []; // 실질적으로 사용할 수 있는 data의 리스트
 
@@ -179,14 +181,19 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
     String docName = (_type == "분실물") ? "Founds" : "Losts";
     FirebaseFirestore firebase = FirebaseFirestore.instance;
     var ref = firebase.collection(docName).where("item", isEqualTo: _item).orderBy('createAt', descending: true);
+    var user = firebase.collection('Users');
     await ref.get().then((value) {
       postQuery = value;
+    });
+    await user.get().then((value) {
+      userQuery = value;
     });
 
     serverItems.clear();
     items.clear();
     writeDatas.clear();
     serverItems.addAll(postQuery.docs);
+    users.addAll(userQuery.docs);
 
     setState(() {
       int count;
@@ -302,7 +309,7 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts")),
+                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts"))
                     );
                   },
                   child: Stack(
