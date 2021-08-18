@@ -93,6 +93,7 @@ class _MyDetailState extends State<MyDetail> {
   Widget build(BuildContext context) {
     String userID = FirebaseAuth.instance.currentUser!.uid.toString();
     int appBarContext = (userID == writerID) ? 0 : 1;
+    double imageSize = (imageCount == 0) ? 100 : MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: _appBarList.elementAt(appBarContext),
       body: FutureBuilder(
@@ -113,7 +114,7 @@ class _MyDetailState extends State<MyDetail> {
                     ),
                     items: snapshot.data!.map((item) => Container(
                       child: Center(
-                          child: Image.network(item)
+                          child: Image.network(item, width: imageSize)
                       ),
                     )).toList(),
                   ),

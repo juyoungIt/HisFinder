@@ -18,6 +18,10 @@ class _LostListPageState extends State<LostListPage> {
   double searchHeight = 0; // 검색창의 뒷배경이 가지는 높이값
   double _dragDistance = 0; // 화면이 스크롤된 거리값을 저장하기 위한 변수
 
+  // 이미지 타일에 사용되는 이미지의 사이즈를 상수로 명시한 부분
+  final double _defaultImageSize = 70.0; // 이미지가 없을 시 사용되는 기본 이미지
+  final double _customImageSize = 100.0; // 사용자가 직접 촬영하여 넣은 이미지
+
   // 데이터베이스로부터 로딩한 정보를 담는 부분
   late QuerySnapshot postQuery;            // 데이터를 가져오기 위한 Query snapshot
   List<DocumentSnapshot> serverItems = []; // 서버로부터 가져오는 데이터를 담음
@@ -71,7 +75,9 @@ class _LostListPageState extends State<LostListPage> {
                             if (index == 0)
                               return HeaderTile();
                             else {
-                              return writeRecordTile(context, items[index-1], index);
+                              double imageSize =
+                              (items[index-1].get('pictureCount') == 0) ? _defaultImageSize : _customImageSize;
+                              return writeRecordTile(context, items[index-1], index, imageSize);
                             }
                           },
                           physics: ClampingScrollPhysics(),
@@ -216,7 +222,7 @@ class _LostListPageState extends State<LostListPage> {
     }
   }
 
-  Widget writeRecordTile(BuildContext context, DocumentSnapshot snapshot, int index) {
+  Widget writeRecordTile(BuildContext context, DocumentSnapshot snapshot, int index, double imageSize) {
     return FutureBuilder(
         future: getImagePath(snapshot),
         builder: (BuildContext context, AsyncSnapshot<String> snap) {
@@ -241,10 +247,16 @@ class _LostListPageState extends State<LostListPage> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  child: Image.network(
-                                    snap.data.toString(),
+                                  child: SizedBox(
                                     width: 100,
                                     height: 100,
+                                    child: Center(
+                                      child: Image.network(
+                                        snap.data.toString(),
+                                        width: imageSize,
+                                        height: imageSize,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
@@ -319,10 +331,16 @@ class _LostListPageState extends State<LostListPage> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  child: Image.network(
-                                    snap.data.toString(),
+                                  child: SizedBox(
                                     width: 100,
                                     height: 100,
+                                    child: Center(
+                                      child: Image.network(
+                                        snap.data.toString(),
+                                        width: imageSize,
+                                        height: imageSize,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
