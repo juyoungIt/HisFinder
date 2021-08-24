@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/detail/keywordSetPage.dart';
@@ -20,6 +21,12 @@ class BodyWidget extends StatefulWidget {
 
 class _BodyWidget extends State<BodyWidget> {
   final User? user = FirebaseAuth.instance.currentUser; // load the current user information
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -36,7 +43,7 @@ class _BodyWidget extends State<BodyWidget> {
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user!.email.toString(), style:TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+                      Text("juyoungryan", style:TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
                       Padding(padding: EdgeInsets.only(bottom:5)),
                       Text(user!.email.toString(), style:TextStyle(fontSize: 20, color: Colors.grey, fontWeight: FontWeight.w300))
                     ]
@@ -65,36 +72,6 @@ class _BodyWidget extends State<BodyWidget> {
             ),
             Divider(
               color: Colors.transparent,
-            ),
-            Container(
-              child: SizedBox(
-                width:size.width * 0.93,
-                height:40,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                        children: [
-                          Text('키워드 알림: ',textScaleFactor: 1.3),
-                          Text('농협',textScaleFactor: 1.3, style: TextStyle(backgroundColor: const Color(0x48ffc107)))
-                        ]
-                    ),
-                    GestureDetector(
-                        onTap: (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EditKeywordPage()),
-                          );
-                        },
-                        child: Image.asset("assets/setting.png", scale: 10)
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Divider(
-              indent:size.width * 0.025,
-              endIndent: size.width * 0.025,
             ),
             Stack(
               alignment: Alignment.center,
@@ -132,6 +109,74 @@ class _BodyWidget extends State<BodyWidget> {
             Divider(
               indent:MediaQuery.of(context).size.width * 0.025,
               endIndent: MediaQuery.of(context).size.width * 0.025,
+            ),
+            Container(
+              child: SizedBox(
+                width:size.width * 0.93,
+                height:40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('키워드 알림',textScaleFactor: 1.3),
+                    GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditKeywordPage()),
+                          );
+                        },
+                        child: Image.asset("assets/setting.png", scale: 10)
+                    )
+                  ],
+                ),
+              ),
+            ),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Keyword')
+                    .where('userID', isEqualTo: user!.uid.toString())
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  final docments = snapshot.data!.docs;
+
+                  // keyword list
+                  return Expanded(
+                    child: ListView.builder(
+                        physics: ClampingScrollPhysics(), // 스크롤 방지
+                        itemCount: 5,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (docments.isEmpty) {
+                            // 데이터가 없다면
+                            return Container(); // 아무것도 생성하지 않는다
+                          }
+
+                          if (docments.single.get('keyword$index') == "") {
+                            // 키워드가 비워져 있다면
+                            return Container(); // 아무것도 생성하지 않는다
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Divider(),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(18, 5, 0, 5),
+                                child: Text(
+                                  docments.single.get('keyword$index'), // get keyword
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                  );
+                }),
+            Divider(
+              indent:size.width * 0.025,
+              endIndent: size.width * 0.025,
             ),
           ],
         )

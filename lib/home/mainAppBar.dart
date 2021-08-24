@@ -30,7 +30,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
               icon: Image.asset("assets/category.png", width: 65, height: 65, scale: 2.5),
               onPressed: () {
-                String type = (selectedIndex == 0) ? "분실물" : "습득물";
+                String type = (selectedIndex == 0) ? "습득물" : "분실물";
                 Navigator.of(context).push(
                     TransparentRoute(builder: (BuildContext context) => CategoryPage(type))
                 );
