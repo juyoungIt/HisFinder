@@ -226,7 +226,6 @@ class _FoundListPageState extends State<FoundListPage> {
 
   Widget writeRecordTile(BuildContext context, DocumentSnapshot snapshot, int index, double imageSize) {
     return FutureBuilder(
-      // future: getImagePath(snapshot.get('picture0').toString(), snapshot),
       future: getImagePath(snapshot),
       builder: (BuildContext context, AsyncSnapshot<String> snap) {
         if(snap.connectionState == ConnectionState.done) {

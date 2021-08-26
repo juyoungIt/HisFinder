@@ -85,7 +85,7 @@ class _MyDetailState extends State<MyDetail> {
   @override
   void initState() {
     super.initState();
-    getAllImages();
+    // getAllImages();
     WriteDataDetail writingData = WriteDataDetail(title, item, place, detail, date, content, status, writer, createAt);
     _appBarList.add(MyWritingAppBar(data, _type, imageCount, originalPath));
     _appBarList.add(OtherWritingAppBar());

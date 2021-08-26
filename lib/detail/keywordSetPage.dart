@@ -127,7 +127,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                     .collection('Keyword').where("userID", isEqualTo: userID)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  final docments = snapshot.data!.docs;
+                  final documents = snapshot.data!.docs;
                   String id = "";
                   FirebaseFirestore.instance
                       .collection('Keyword')
@@ -142,7 +142,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                           itemCount: 5, //int.parse(docments.single.get('keywordNum')),
                           itemBuilder: (BuildContext context, int index) {
                             // keyword 가 비어 있다면
-                            if (docments.single.get('keyword$index') == "") {
+                            if (documents.single.get('keyword$index') == "") {
                               return Container(); // 아무것도 출력하지 않는다.
                             } else {
                               //------------------------------------------------
@@ -165,7 +165,7 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        docments.single.get('keyword$index'),
+                                        documents.single.get('keyword$index'),
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold
