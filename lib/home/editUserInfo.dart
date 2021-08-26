@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class EditUserInfoPage extends StatelessWidget {
-  // const MyApp({Key? key}) : super(key: key);
-  // static const String _title = 'HisFinder';
   @override
   Widget build(BuildContext context) {
     return MyStatefulWidget();
@@ -12,11 +10,9 @@ class MyStatefulWidget extends StatefulWidget {
   @override
   State<MyStatefulWidget> createState() => MyStatefulWidgetState();
 }
-// int _selectedIndex = 0;
+
 class MyStatefulWidgetState extends State<MyStatefulWidget> {
-
   final TextEditingController _controller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;

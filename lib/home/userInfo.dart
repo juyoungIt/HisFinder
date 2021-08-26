@@ -76,7 +76,7 @@ class _BodyWidget extends State<BodyWidget> {
                           ),
                           child: Text('프로필 수정', textScaleFactor:1.17),
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => EditUserInfoPage()),
                             );
@@ -194,10 +194,6 @@ class _BodyWidget extends State<BodyWidget> {
                           else
                             return Container();
                         }),
-                    Divider(
-                      indent:size.width * 0.025,
-                      endIndent: size.width * 0.025,
-                    ),
                   ],
                 )
             );
