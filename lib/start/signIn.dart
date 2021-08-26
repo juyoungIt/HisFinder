@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
-import 'package:untitled/start/Signup.dart';
-import 'PasswordReset.dart';
+import 'package:untitled/start/signUp.dart';
+import 'passwordReset.dart';
 
-class SigninPage extends StatelessWidget {
+class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -80,7 +80,7 @@ class InputFormTemplate extends State<InputForm> {
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                   errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                  hintText: "Student ID"
+                  hintText: "학번"
               ),
               validator: (value) {
                 if(value!.length < 1)
@@ -100,7 +100,7 @@ class InputFormTemplate extends State<InputForm> {
                 enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                 errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                 border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                hintText: "Password",
+                hintText: "비밀번호",
               ),
               validator: (value){
                 if(value!.length < 1)
@@ -110,7 +110,7 @@ class InputFormTemplate extends State<InputForm> {
           Container(
             alignment: Alignment.topRight,
             child: TextButton(
-                child: Text('Forgot your password?',
+                child: Text('비밀번호를 잊어버렸나요?',
                   style: TextStyle(
                     fontFamily: 'avenir',
                     color: const Color(0xff6990FF),
@@ -132,7 +132,7 @@ class InputFormTemplate extends State<InputForm> {
                     primary: const Color(0xff6990FF), // background
                     onPrimary: Colors.white, // foreground
                   ),
-                  child: Text('Sign in', style: TextStyle(color: Colors.white)),
+                  child: Text('로그인', style: TextStyle(color: Colors.white)),
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
@@ -147,7 +147,7 @@ class InputFormTemplate extends State<InputForm> {
                           await user.sendEmailVerification();
                           _showAlert(title: "인증메일 발송", message: "회원가입을 위한 인증메일이 발송되었습니다.\n메일주소를 인증하세요.");
                           // ScaffoldMessenger.of(context)
-                          //     .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다.\n메일주소를 인증하세요.')));
+                          //     .showSnackBar(SnackBar(content: Text('회원가입을 위한 인증메일이 발송되었습니다.\n 메일주소를 인증하세요.')));
                         }
                         else {
                           ScaffoldMessenger.of(context)
@@ -215,7 +215,7 @@ class GuestLogin extends StatelessWidget {
         Container(height: 15), // 공백 삽입을 목적으로 추가된 부분
         // Gueset Login을 안내하는 text를 출력하는 부분
         Text(
-          'Guest Login',
+          '게스트 로그인',
           style: TextStyle(
             fontFamily: 'avenir',
             fontWeight: FontWeight.bold,
@@ -246,7 +246,7 @@ class GoToSignUp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text("Don't have an Account?",
+              Text("계정을 가지고 있지 않나요?",
                 style: TextStyle(
                     fontFamily: 'avenir',
                     color: const Color(0xff6990FF)
@@ -257,7 +257,7 @@ class GoToSignUp extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) => SignupPage()),
                 );
-              }, child: Text("Signup", style: TextStyle(
+              }, child: Text("회원가입", style: TextStyle(
                 fontFamily: 'avenir',
                 fontWeight: FontWeight.bold,
                 color: const Color(0xff6990FF),

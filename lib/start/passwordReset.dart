@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/start/Signup.dart';
+import 'package:untitled/start/signUp.dart';
 import 'package:untitled/write/write.dart';
 
-import 'Signin.dart';
+import 'signIn.dart';
 
 class PasswordResetPage extends StatelessWidget {
   @override
@@ -103,7 +103,7 @@ class InputFormTemplate extends State<InputForm> {
                           .showSnackBar(SnackBar(content: Text('초기화 메일을 발송하였습니다. 이메일을 확인해주세요')));
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SigninPage()),
+                        MaterialPageRoute(builder: (context) => SignInPage()),
                       );
                     }
                   }

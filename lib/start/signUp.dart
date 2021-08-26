@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/start/Signin.dart';
+import 'package:untitled/start/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupPage extends StatelessWidget {
@@ -73,7 +73,7 @@ class InputFormTemplate extends State<InputForm> {
                         enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                         errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                         border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                        hintText: "Nickname"
+                        hintText: "닉네임"
                     ),
                     validator: (value) {
                       if(value!.length < 1)
@@ -127,7 +127,7 @@ class InputFormTemplate extends State<InputForm> {
                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                   errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                   border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                  hintText: "Student ID"
+                  hintText: "학번"
               ),
               validator: (value) {
                 if(value!.length < 1)
@@ -147,7 +147,7 @@ class InputFormTemplate extends State<InputForm> {
                 enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                 errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                 border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                hintText: "Password",
+                hintText: "비밀번호",
               ),
               validator: (value){
                 if(value!.length < 1)
@@ -166,7 +166,7 @@ class InputFormTemplate extends State<InputForm> {
                 enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xff6990FF))),
                 errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 2, color: const Color(0xffff0000))),
                 border: OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red)),
-                hintText: "Password Confirm",
+                hintText: "비밀번호 확인",
               ),
               validator: (value){
                 if(value!.length < 1 || value!=_pwController.text)
@@ -183,7 +183,7 @@ class InputFormTemplate extends State<InputForm> {
                     primary: const Color(0xff6990FF), // background
                     onPrimary: Colors.white, // foreground
                   ),
-                  child: Text('Join with HisFinder', style: TextStyle(color: Colors.white)),
+                  child: Text("회원가입", style: TextStyle(color: Colors.white)),
                   onPressed: () async {
                     if (_formKey.currentState!.validate() && check) {
                       try {
@@ -205,7 +205,7 @@ class InputFormTemplate extends State<InputForm> {
                         });
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (context) => SigninPage()),
+                          MaterialPageRoute(builder: (context) => SignInPage()),
                               (route) => false,
                         );
                       } on FirebaseAuthException catch (e) {
@@ -279,7 +279,7 @@ class GoToSignIn extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text("Have an Account?",
+              Text("계정을 가지고 있나요?",
                 style: TextStyle(
                     fontFamily: 'avenir',
                     color: const Color(0xff6990FF)
@@ -288,9 +288,9 @@ class GoToSignIn extends StatelessWidget {
               TextButton(onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
+                  MaterialPageRoute(builder: (context) => SignInPage()),
                 );
-              }, child: Text("Signin", style: TextStyle(
+              }, child: Text("로그인", style: TextStyle(
                 fontFamily: 'avenir',
                 fontWeight: FontWeight.bold,
                 color: const Color(0xff6990FF),
