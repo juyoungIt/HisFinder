@@ -117,7 +117,11 @@ class InputFormTemplate extends State<InputForm> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.push(
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => PasswordResetPage()),
+                  // );
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => PasswordResetPage()),
                   );
@@ -253,6 +257,10 @@ class GoToSignUp extends StatelessWidget {
                 ),
               ),
               TextButton(onPressed: () {
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => SignupPage()),
+                // );
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SignupPage()),

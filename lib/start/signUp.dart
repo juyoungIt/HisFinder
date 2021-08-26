@@ -203,10 +203,14 @@ class InputFormTemplate extends State<InputForm> {
                         FirebaseFirestore.instance.collection('Users').doc(uid).set({
                           'nickname': _nicknameController.text.toString()
                         });
-                        Navigator.pushAndRemoveUntil(
+                        // Navigator.pushAndRemoveUntil(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => SignInPage()),
+                        //       (route) => false,
+                        // );
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => SignInPage()),
-                              (route) => false,
                         );
                       } on FirebaseAuthException catch (e) {
                         if (e.code == 'weak-password') {
@@ -286,7 +290,11 @@ class GoToSignIn extends StatelessWidget {
                 ),
               ),
               TextButton(onPressed: () {
-                Navigator.push(
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => SignInPage()),
+                // );
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SignInPage()),
                 );
