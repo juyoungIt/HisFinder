@@ -127,71 +127,76 @@ class MyStatefulWidgetState extends State<MyStatefulWidget> {
                     .collection('Keyword').where("userID", isEqualTo: userID)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  final documents = snapshot.data!.docs;
-                  String id = "";
-                  FirebaseFirestore.instance
-                      .collection('Keyword')
-                      .where('userID', isEqualTo: userID)
-                      .limit(1)
-                      .get()
-                      .then((value) {
-                    id = value.docs.single.id;
-                  });
-                  return Expanded(
-                      child: ListView.builder(
-                          itemCount: 5, //int.parse(docments.single.get('keywordNum')),
-                          itemBuilder: (BuildContext context, int index) {
-                            // keyword 가 비어 있다면
-                            if (documents.single.get('keyword$index') == "") {
-                              return Container(); // 아무것도 출력하지 않는다.
-                            } else {
-                              //------------------------------------------------
-                              // TODO : 수정 필요
-                              // timestamp를 사용하여 keyword가 변경된 시각을 기록해야 함.
-                              return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(2),
-                                    ),
-                                    border: Border.all(
-                                      color: Color(0xff6990FF),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                  padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        documents.single.get('keyword$index'),
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold
-                                        ),
+                  final documents;
+                  if(snapshot.data != null) {
+                    documents = snapshot.data!.docs;
+                    String id = "";
+                    FirebaseFirestore.instance
+                        .collection('Keyword')
+                        .where('userID', isEqualTo: userID)
+                        .limit(1)
+                        .get()
+                        .then((value) {
+                      id = value.docs.single.id;
+                    });
+                    return Expanded(
+                        child: ListView.builder(
+                            itemCount: 5, //int.parse(docments.single.get('keywordNum')),
+                            itemBuilder: (BuildContext context, int index) {
+                              // keyword 가 비어 있다면
+                              if (documents.single.get('keyword$index') == "") {
+                                return Container(); // 아무것도 출력하지 않는다.
+                              } else {
+                                //------------------------------------------------
+                                // TODO : 수정 필요
+                                // timestamp를 사용하여 keyword가 변경된 시각을 기록해야 함.
+                                return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(2),
                                       ),
-                                      IconButton(
-                                        onPressed: () {
-                                          FirebaseFirestore.instance
-                                              .collection('Keyword')
-                                              .doc(id)
-                                              .update({'keyword$index': ""});
-                                        },
-                                        icon: Image.asset(
-                                            "assets/keywordListDelete.png",
-                                            width: 58,
-                                            height: 58,
-                                            scale: 4
-                                        ),
+                                      border: Border.all(
+                                        color: Color(0xff6990FF),
+                                        width: 1,
                                       ),
-                                    ],
-                                  ));
-                              //------------------------------------------------
+                                    ),
+                                    margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          documents.single.get('keyword$index'),
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            FirebaseFirestore.instance
+                                                .collection('Keyword')
+                                                .doc(id)
+                                                .update({'keyword$index': ""});
+                                          },
+                                          icon: Image.asset(
+                                              "assets/keywordListDelete.png",
+                                              width: 58,
+                                              height: 58,
+                                              scale: 4
+                                          ),
+                                        ),
+                                      ],
+                                    ));
+                                //------------------------------------------------
+                              }
                             }
-                          }
-                          )
-                  );
+                        )
+                    );
+                  }
+                  else
+                    return Container();
                 },
               )
             ])

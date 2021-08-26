@@ -154,42 +154,45 @@ class _BodyWidget extends State<BodyWidget> {
                             .where('userID', isEqualTo: user!.uid.toString())
                             .snapshots(),
                         builder: (context, snapshot) {
-                          final docments = snapshot.data!.docs;
+                          final documents;
+                          if(snapshot.data != null) {
+                            documents = snapshot.data!.docs;
+                            return Expanded(
+                              child: ListView.builder(
+                                  physics: ClampingScrollPhysics(), // 스크롤 방지
+                                  itemCount: 5,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    if (documents.isEmpty) {
+                                      // 데이터가 없다면
+                                      return Container(); // 아무것도 생성하지 않는다
+                                    }
 
-                          // keyword list
-                          return Expanded(
-                            child: ListView.builder(
-                                physics: ClampingScrollPhysics(), // 스크롤 방지
-                                itemCount: 5,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (docments.isEmpty) {
-                                    // 데이터가 없다면
-                                    return Container(); // 아무것도 생성하지 않는다
-                                  }
+                                    if (documents.single.get('keyword$index') == "") {
+                                      // 키워드가 비워져 있다면
+                                      return Container(); // 아무것도 생성하지 않는다
+                                    }
 
-                                  if (docments.single.get('keyword$index') == "") {
-                                    // 키워드가 비워져 있다면
-                                    return Container(); // 아무것도 생성하지 않는다
-                                  }
-
-                                  return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(18, 5, 0, 5),
-                                        child: Text(
-                                          docments.single.get('keyword$index'), // get keyword
-                                          style: TextStyle(
-                                            fontSize: 20,
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(18, 5, 0, 5),
+                                          child: Text(
+                                            documents.single.get('keyword$index'), // get keyword
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Divider()
-                                    ],
-                                  );
-                                }),
-                          );
+                                        Divider()
+                                      ],
+                                    );
+                                  }),
+                            );
+                          }
+                          else
+                            return Container();
                         }),
                     Divider(
                       indent:size.width * 0.025,
