@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'package:untitled/chatting/chatroom.dart';
 import 'package:untitled/detail/myWritingAppBar.dart';
 import 'package:untitled/detail/otherWritingAppBar.dart';
 
@@ -286,7 +287,17 @@ class _MyDetailState extends State<MyDetail> {
                           //------------------------------------------------------------
                           SizedBox(height: 5.0),
                           MaterialButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                String chatRoomID =
+                                // "chatInit/${widget.writerUID}/${widget.boardType}";
+                                    "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+                                return ChatRoomView(
+                                  chatRoomID: chatRoomID,
+                                  chatRoomName: "",
+                                );
+                              }));
+                            },
                             child: Text('메시지 보내기',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,

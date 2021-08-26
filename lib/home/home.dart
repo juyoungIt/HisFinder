@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/chatting/chatroomList.dart';
 import 'package:untitled/home/chatListAppBar.dart';
 import 'package:untitled/home/userInfo.dart';
 import 'package:untitled/home/userInfoAppBar.dart';
@@ -41,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     FoundListPage(),
     LostListPage(),
     Container(), // 글쓰기
-    Container(), // 채팅
+    ChatRoomList(), // 채팅
     UserInfoPage()
   ];
 
