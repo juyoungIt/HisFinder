@@ -31,18 +31,19 @@ class _ChatRoomListState extends State<ChatRoomList> {
         if(snapshot.hasError){
           print(snapshot.error);
         }
-        if (snapshot.connectionState == ConnectionState.none &&
-            snapshot.hasData == null) {
+        if (snapshot.connectionState == ConnectionState.none && snapshot.hasData == null) {
           return Center(
               child: SizedBox(
                 height: 5,
                 width: 5,
                 child: CircularProgressIndicator(),
-              ));
-        } else if (snapshot.data != null &&
-            snapshot.data!.docs.length == 0) {
-          return Center(child: Text("no result"));
-        } else if (snapshot.data != null) {
+              )
+          );
+        }
+        else if (snapshot.data != null && snapshot.data!.docs.length == 0) {
+          return Center(child: Text("현재 진행 중인 채팅이 없습니다"));
+        }
+        else if (snapshot.data != null) {
           // return ListView(
           //   children: snapshot.data!.docs.map((DocumentSnapshot document) {
           //   Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
@@ -53,8 +54,9 @@ class _ChatRoomListState extends State<ChatRoomList> {
           //   }).toList(),
           // );
           return _chatRoomList(context, snapshot.data!.docs);
-        } else {
-          return Center(child: Text("no result"));
+        }
+        else {
+          return Center(child: Text("예상하지 못한 오류가 발생했습니다"));
         }
       },
     );
@@ -78,21 +80,6 @@ class _ChatRoomListState extends State<ChatRoomList> {
                 }),
           ),
         ),
-        RaisedButton(
-            color: const Color(0xff6990FF),
-            child: Text('Chatting'), textColor: Colors.white,
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                String chatRoomID =
-                    // "chatInit/${widget.writerUID}/${widget.boardType}";
-                  "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
-                return ChatRoomView(
-                  chatRoomID: chatRoomID,
-                  chatRoomName: "",
-                );
-              }));
-            }
-        )
       ],
     );
   }

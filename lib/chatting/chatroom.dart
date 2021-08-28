@@ -35,6 +35,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
   String chatRoomID;
   String chatRoomName;
   late String receiverID;
+  String currentUserID = FirebaseAuth.instance.currentUser!.uid.toString();
   List<String> tokens = <String>[];
 
   final _focusNode = FocusNode();
@@ -302,7 +303,8 @@ class _ChatRoomViewState extends State<ChatRoomView>
   }
 
   Widget chatMessageItem(BuildContext context, DocumentSnapshot document1, DocumentSnapshot document2) {
-    bool isSender = document1['sender'] == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+    // bool isSender = document1['sender'] == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+    bool isSender = document1['sender'] == currentUserID;
     Timestamp tt = document1["date"];
     Timestamp tt2 = document2["date"];
     String date = "";
@@ -440,7 +442,8 @@ class _ChatRoomViewState extends State<ChatRoomView>
     tokens = chatRoomID.split('/');
     receiverID = tokens[1];
     if (tokens.length == 3) {
-      String senderID = "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+      // String senderID = "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+      String senderID = currentUserID;
       QuerySnapshot docSnapshots = await db
           .collection('chatroom')
           .where('participants', arrayContains: senderID)
@@ -490,8 +493,10 @@ class _ChatRoomViewState extends State<ChatRoomView>
           .get()
           .then((result) async {
         List<dynamic> participants = result.data()!['participants'];
+        // participants
+        //     .removeWhere((element) => element == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1");
         participants
-            .removeWhere((element) => element == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1");
+            .removeWhere((element) => element == currentUserID);
         receiverID = participants[0];
       });
     }
@@ -509,7 +514,8 @@ class _ChatRoomViewState extends State<ChatRoomView>
         .snapshots();
     chatStreamSub = chatStream.listen(null);
     chatStreamSub.onData((snapshot) {
-      if (snapshot.documents[0]["sender"] != "IoWY4yaZWSTCRpSqQUKpx8SzMfs1") {
+      // if (snapshot.documents[0]["sender"] != "IoWY4yaZWSTCRpSqQUKpx8SzMfs1") {
+      if (snapshot.documents[0]["sender"] != currentUserID) {
         if (_isOnDataFirstCalled) {
           _isOnDataFirstCalled = false;
         } else {
@@ -559,14 +565,14 @@ class _ChatRoomViewState extends State<ChatRoomView>
       final freshSnapshot = await transaction.get(docRef);
       // final freshSnapshot = docRef.get('adsf')
       final fresh = freshSnapshot.data()! as Map;
-      _unreadCount = fresh["unreadCount"]["IoWY4yaZWSTCRpSqQUKpx8SzMfs1"];
+      _unreadCount = fresh["unreadCount"][currentUserID];
       List<dynamic> onlineUsers = fresh["onlineUser"];
-      if (!onlineUsers.contains("IoWY4yaZWSTCRpSqQUKpx8SzMfs1")) {
-        onlineUsers.add("IoWY4yaZWSTCRpSqQUKpx8SzMfs1");
+      if (!onlineUsers.contains(currentUserID)) {
+        onlineUsers.add(currentUserID);
       }
       await transaction.update(docRef, {
         'onlineUser': onlineUsers,
-        'unreadCount.${"IoWY4yaZWSTCRpSqQUKpx8SzMfs1"}': 0,
+        'unreadCount.$currentUserID': 0,
       });
     });
     if (receiverID != null) {
@@ -593,7 +599,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
       final freshSnapshot = await transaction.get(docRef);
       final fresh = freshSnapshot.data()! as Map;
       List<dynamic> onlineUsers = fresh["onlineUser"];
-      onlineUsers.removeWhere((element) => element == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1");
+      onlineUsers.removeWhere((element) => element == currentUserID);
       await transaction.update(docRef, {'onlineUser': onlineUsers});
     });
   }
@@ -761,17 +767,17 @@ class _ChatRoomViewState extends State<ChatRoomView>
     if (chatRoomID.startsWith("chatInit")) {
       CollectionReference chatroomRef = db.collection('chatroom');
       List<String> _particitants = <String>[];
-      _particitants.add("IoWY4yaZWSTCRpSqQUKpx8SzMfs1");
+      _particitants.add(currentUserID);
       _particitants.add(receiverID);
       await chatroomRef.add({
         // 'isAnonymous': tokens[2] == 'anonymous',
         'lastDate': _now,
         'participants': _particitants,
-        'onlineUser': ["IoWY4yaZWSTCRpSqQUKpx8SzMfs1"],
+        'onlineUser': [currentUserID],
         'lastMessage': isImage ? '<Photo>' : content,
         'unreadCount': {
           receiverID: 1,
-          "IoWY4yaZWSTCRpSqQUKpx8SzMfs1": 0,
+          currentUserID: 0,
         }
       }).then((docRef) async {
         CollectionReference msgsRef = docRef.collection('messages');
@@ -780,7 +786,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
             'type': 'image',
             'content': content,
             'date': _now,
-            'sender': "IoWY4yaZWSTCRpSqQUKpx8SzMfs1",
+            'sender': currentUserID,
             'isRead': false,
           });
         } else {
@@ -788,7 +794,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
             'type': 'text',
             'content': content,
             'date': _now,
-            'sender': "IoWY4yaZWSTCRpSqQUKpx8SzMfs1",
+            'sender': currentUserID,
             'isRead': false,
           });
         }
@@ -812,7 +818,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
           'type': 'image',
           'content': content,
           'date': _now,
-          'sender': "IoWY4yaZWSTCRpSqQUKpx8SzMfs1",
+          'sender': currentUserID,
           'isRead': isRead,
         }).then((DocRef) async {
           await DocRef.get().then((DocSnapshot) {
@@ -827,7 +833,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
           'type': 'text',
           'content': content,
           'date': _now,
-          'sender': "IoWY4yaZWSTCRpSqQUKpx8SzMfs1",
+          'sender': currentUserID,
           'isRead': isRead,
         }).then((DocRef) async {
           await DocRef.get().then((DocSnapshot) {

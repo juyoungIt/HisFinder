@@ -286,12 +286,14 @@ class _MyDetailState extends State<MyDetail> {
                           ),
                           //------------------------------------------------------------
                           SizedBox(height: 5.0),
+                          // 메세지 보내기 버튼에 대한 부분
                           MaterialButton(
                             onPressed: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 String chatRoomID =
-                                // "chatInit/${widget.writerUID}/${widget.boardType}";
-                                    "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
+                                    "chatInit/$writerID/${FirebaseAuth.instance.currentUser!.uid}";
+                                // "chatInit/${widget.writerId}/${widget.boardType}";
+                                // "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
                                 return ChatRoomView(
                                   chatRoomID: chatRoomID,
                                   chatRoomName: "",
