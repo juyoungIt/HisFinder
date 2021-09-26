@@ -178,7 +178,7 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
   // load the new data
   Future<void> requestNew() async {
     nextPage = 0;        // 현재 페이지
-    String docName = (_type == "분실물") ? "Founds" : "Losts";
+    String docName = (_type == "분실물") ? "Losts" : "Founds";
     FirebaseFirestore firebase = FirebaseFirestore.instance;
     var ref = firebase.collection(docName).where("item", isEqualTo: _item).orderBy('createAt', descending: true);
     var user = firebase.collection('Users');
