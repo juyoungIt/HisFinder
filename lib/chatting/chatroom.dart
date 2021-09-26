@@ -190,17 +190,14 @@ class _ChatRoomViewState extends State<ChatRoomView>
                           return Column(
                             children: [
                               chatMessageItem(
-                                  context, _messages[index], index==_messages.length-1 ? _messages[index] : _messages[index+1]),
+                                  context, _messages[index], index==_messages.length-1 ? _messages[index] : _messages[index+1], index==0 ? _messages[index] : _messages[index-1]),
                               Container(
                                 width: 150,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  "여기까지 읽었습니다",
+                                  "\n여기까지 읽었습니다\n",
                                   style: TextStyle(
-                                    // color: Theme.of(context)
-                                    //     .textTheme
-                                    //     .bodyText1!
-                                    //     .color
+                                    color: Colors.grey
                                   ),
                                 ),
                               ),
@@ -208,7 +205,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
                           );
                         } else {
                           return chatMessageItem(
-                              context, _messages[index], index==_messages.length-1 ? _messages[index] : _messages[index+1]);
+                              context, _messages[index], index==_messages.length-1 ? _messages[index] : _messages[index+1] , index==0 ? _messages[index] : _messages[index-1]);
                         }
                       }
                     })
@@ -302,13 +299,18 @@ class _ChatRoomViewState extends State<ChatRoomView>
     }
   }
 
-  Widget chatMessageItem(BuildContext context, DocumentSnapshot document1, DocumentSnapshot document2) {
+  Widget chatMessageItem(BuildContext context, DocumentSnapshot document1, DocumentSnapshot document2, DocumentSnapshot document3) {
     // bool isSender = document1['sender'] == "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
     bool isSender = document1['sender'] == currentUserID;
     Timestamp tt = document1["date"];
     Timestamp tt2 = document2["date"];
+    Timestamp tt3 = document3["date"];
     String date = "";
+    String date2 = "";
+    String date3 = "";
     date = DateFormat('kk:mma').format(tt.toDate()).toString();
+    date2 = DateFormat('kk:mma').format(tt3.toDate()).toString();
+    date3 = DateFormat('kk:mma').format(tt2.toDate()).toString();
     final nextTime = tt;
     final time = tt2;
     final timeToDate = DateFormat('yyyy-MM-dd')
@@ -354,7 +356,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
                       ? SizedBox(width:15, child: Text("1", style: TextStyle(fontSize: 12, color: const Color(0xffff8c8c)),))
                       : Text(""),
                   Text(
-                    date,
+                    ((date!=date2 || tt == tt3 || ((document1['sender'] != document2['sender'] && date!=date2 )|| (document1['sender'] != document3['sender'] && date != date3))))?date:"",
                     style: TextStyle(
                         color: Colors.grey, fontSize: 13.5
                       // color: Theme.of(context)
@@ -374,7 +376,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
                   messagebody(document1['type'], document1["content"], isSender,
                       context),
                   Text(
-                    date,
+                    (date != date2 || tt==tt3 || document1['sender'] != document3['sender'])?date:"",
                     style: TextStyle(
                         color: Colors.grey, fontSize: 13.5
                       // color: Theme.of(context)
@@ -857,7 +859,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
           await transaction.update(chatroomRef, {
             'lastDate': _now,
             'lastMessage': isImage ? '<Photo>' : content,
-            'unreadCount.$receiverID': fresh['unreadCount'][receiverID], //+ 1,
+            'unreadCount.$receiverID': fresh['unreadCount'][receiverID] + 1,
           });
           db
               .collection('user')
