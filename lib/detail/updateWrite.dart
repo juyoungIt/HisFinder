@@ -1,4 +1,3 @@
-// import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'dart:convert';
 
 // for data transfer between class
 class DataContainer {
@@ -35,7 +35,7 @@ class DataContainer {
   }
 }
 
-class WritePage extends StatelessWidget {
+class UpdateWritePage extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance; // the instance of firebase
   // the controller of text form fields
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -44,8 +44,23 @@ class WritePage extends StatelessWidget {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
   final DataContainer dataContainer = DataContainer(); // include segmented, item, place value
-  final List<UploadJob> _profilePictures = []; // store the uploaded pictures
+  List<UploadJob> _profilePictures = []; // store the uploaded pictures
   final User? user = FirebaseAuth.instance.currentUser; // load the current user information
+  late final DocumentSnapshot snap;
+
+  // constructor
+  UpdateWritePage(DocumentSnapshot snap, String type) {
+    this.snap = snap;
+    dataContainer.setSegmented((type == "Founds") ? 0 : 1);
+    // Map<String,dynamic> jsonData = jsonDecode(snap.get('uploadedImages').toString());
+    // _profilePictures = (json.decode(snap.get('uploadedImages').toString()) as List).map((i) => UploadJob.fromJson(i)).toList();
+    _titleController.text = snap.get('title').toString();
+    _contentController.text = snap.get('content').toString();
+    dataContainer.setItem(snap.get('item').toString());
+    dataContainer.setPlace(snap.get('place').toString());
+    _dateController.text = snap.get('date').toString();
+    _detailController.text = snap.get('detail').toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +74,7 @@ class WritePage extends StatelessWidget {
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.w400,
               ),
-            textScaleFactor: 1.4
+              textScaleFactor: 1.4
           ),
           centerTitle: true,
           backgroundColor: Color(0xff6990FF),
@@ -70,47 +85,36 @@ class WritePage extends StatelessWidget {
                 if (_formKey.currentState!.validate()) {
                   // calulate current uploaded images
                   int length = (_profilePictures.length == 5) ? _profilePictures.length : _profilePictures.length-1;
-                  // String uploadImages = jsonEncode(_profilePictures.map((i) => i.toJson()).toList()).toString();
                   if(dataContainer.getSegmented() != 1) {
-                    firestore.collection("Founds").add({
+                    firestore.collection("Founds").doc(snap.id).update({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
-                      // 'uploadedImages': uploadImages,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),
                       'place': dataContainer.getPlace(),
                       'date': _dateController.text,
-                      'detail': _detailController.text,
-                      'createAt': Timestamp.now(),
-                      'status': false,
-                      'writer_email': user!.email,
-                      'writer_uid': user!.uid
+                      'detail': _detailController.text
                     });
                     ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
+                        .showSnackBar(SnackBar(content: Text('작성하신 내용으로 수정되었습니다.')));
                   }
                   // lost
                   else {
-                    firestore.collection("Losts").add({
+                    firestore.collection("Losts").doc(snap.id).update({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
                         'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
-                      // 'uploadedImages': uploadImages,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),
                       'place': dataContainer.getPlace(),
                       'date': _dateController.text,
-                      'detail': _detailController.text,
-                      'createAt': Timestamp.now(),
-                      'status': false,
-                      'writer_email': user!.email,
-                      'writer_uid': user!.uid
+                      'detail': _detailController.text
                     });
                     ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text('작성하신 글이 등록되었습니다.')));
+                        .showSnackBar(SnackBar(content: Text('작성하신 내용으로 수정되었습니다.')));
                   }
                   Navigator.push(
                     context,
@@ -169,7 +173,7 @@ class InputForm extends StatefulWidget {
 
   // constructor
   InputForm.init(
-    GlobalKey<FormState> formKey, TextEditingController titleController,
+      GlobalKey<FormState> formKey, TextEditingController titleController,
       TextEditingController contentController,
       TextEditingController dateController,
       TextEditingController detailController,
@@ -376,6 +380,7 @@ class InputFormTemplate extends State<InputForm> {
                 width: size.width * 0.85,
                 child: DropdownButtonFormField<String>(
                     hint: Text("물건종류 (필수)"),
+                    value: dataContainer.getItem().toString(),
                     decoration: InputDecoration (
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -410,6 +415,7 @@ class InputFormTemplate extends State<InputForm> {
                 width: size.width * 0.85,
                 child: DropdownButtonFormField<String>(
                     hint: Text("장소 (필수)"),
+                    value: dataContainer.getPlace().toString(),
                     decoration: InputDecoration (
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
