@@ -91,9 +91,9 @@ class _ChatRoomListState extends State<ChatRoomList> {
     Future _getInitialData() async {
       String participantsString = "";
       if (participants.length > 0) {
-        DocumentSnapshot ds =
-        await db.collection('user').doc(participants[0]).get();  //유저 아이디로 유저 정보 가져오기
-        participantsString = participants[0];  //닉네임 가져오기
+        DocumentSnapshot ds = await db.collection('Users').doc(participants[0]).get();  //유저 아이디로 유저 정보 가져오기
+        // participantsString = participants[0];  //닉네임 가져오기
+        participantsString = ds['nickname'];  //닉네임 가져오기
       } else {
         participantsString = "unknown";
       }

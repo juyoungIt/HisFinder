@@ -444,7 +444,6 @@ class _ChatRoomViewState extends State<ChatRoomView>
     tokens = chatRoomID.split('/');
     receiverID = tokens[1];
     if (tokens.length == 3) {
-      // String senderID = "IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
       String senderID = currentUserID;
       QuerySnapshot docSnapshots = await db
           .collection('chatroom')
@@ -516,7 +515,6 @@ class _ChatRoomViewState extends State<ChatRoomView>
         .snapshots();
     chatStreamSub = chatStream.listen(null);
     chatStreamSub.onData((snapshot) {
-      // if (snapshot.documents[0]["sender"] != "IoWY4yaZWSTCRpSqQUKpx8SzMfs1") {
       if (snapshot.documents[0]["sender"] != currentUserID) {
         if (_isOnDataFirstCalled) {
           _isOnDataFirstCalled = false;
