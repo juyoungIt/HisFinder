@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -276,17 +277,17 @@ class _FoundListPageState extends State<FoundListPage> {
                                       ),
                                       SizedBox(height: 5),
                                       Text(
-                                        "물품 " + writeDatas[index-1].item,
+                                        "물품 : " + writeDatas[index-1].item,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
                                       Text(
-                                        "장소 " + writeDatas[index-1].place,
+                                        "장소 : " + writeDatas[index-1].place,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
                                       Text(
-                                        "습득일 " + writeDatas[index-1].date,
+                                        "습득일 : " + writeDatas[index-1].date,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
@@ -337,11 +338,13 @@ class _FoundListPageState extends State<FoundListPage> {
                                   width: 100,
                                   height: 100,
                                   child: Center(
-                                    child: Image.network(
-                                      snap.data.toString(),
+                                    child: CachedNetworkImage(
+                                      imageUrl: snap.data.toString(),
+                                      placeholder: (context, url) => CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) => Icon(Icons.error),
                                       width: imageSize,
-                                      height: imageSize,
-                                    ),
+                                      height: imageSize
+                                    )
                                   ),
                                 ),
                               ),
@@ -360,17 +363,17 @@ class _FoundListPageState extends State<FoundListPage> {
                                       ),
                                       SizedBox(height: 5),
                                       Text(
-                                        "물품 " + writeDatas[index-1].item,
+                                        "물품 : " + writeDatas[index-1].item,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
                                       Text(
-                                        "장소 " + writeDatas[index-1].place,
+                                        "장소 : " + writeDatas[index-1].place,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
                                       Text(
-                                        "습득일 " + writeDatas[index-1].date,
+                                        "습득일 : " + writeDatas[index-1].date,
                                         style: TextStyle(
                                             fontSize: 12, color: Color(0xff999999)),
                                       ),
