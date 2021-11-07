@@ -93,7 +93,8 @@ class _ChatRoomListState extends State<ChatRoomList> {
       if (participants.length > 0) {
         DocumentSnapshot ds = await db.collection('Users').doc(participants[0]).get();  //유저 아이디로 유저 정보 가져오기
         // participantsString = participants[0];  //닉네임 가져오기
-        participantsString = ds['nickname'];  //닉네임 가져오기
+        if(!ds.exists) participantsString = "unknown";
+        else participantsString = ds['nickname'];  //닉네임 가져오기
       } else {
         participantsString = "unknown";
       }

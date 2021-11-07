@@ -1,4 +1,3 @@
-// import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/home/home.dart';
@@ -63,7 +62,6 @@ class WritePage extends StatelessWidget {
           ),
           centerTitle: true,
           backgroundColor: Color(0xff6990FF),
-          // leading: IconButton(icon: Image.asset("assets/prev.png", scale: 4), onPressed: (){Navigator.pop(context);}),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -75,8 +73,7 @@ class WritePage extends StatelessWidget {
                     firestore.collection("Founds").add({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
-                        'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
-                      // 'uploadedImages': uploadImages,
+                        'picture' + i.toString() : _profilePictures[i].storageReference!.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),
@@ -96,8 +93,7 @@ class WritePage extends StatelessWidget {
                     firestore.collection("Losts").add({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
-                        'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
-                      // 'uploadedImages': uploadImages,
+                        'picture' + i.toString() : _profilePictures[i].storageReference!.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),

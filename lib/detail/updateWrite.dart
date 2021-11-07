@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_picture_uploader/firebase_picture_uploader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'dart:convert';
 
 // for data transfer between class
 class DataContainer {
@@ -44,7 +43,7 @@ class UpdateWritePage extends StatelessWidget {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
   final DataContainer dataContainer = DataContainer(); // include segmented, item, place value
-  List<UploadJob> _profilePictures = []; // store the uploaded pictures
+  final List<UploadJob> _profilePictures = []; // store the uploaded pictures
   final User? user = FirebaseAuth.instance.currentUser; // load the current user information
   late final DocumentSnapshot snap;
 
@@ -52,6 +51,13 @@ class UpdateWritePage extends StatelessWidget {
   UpdateWritePage(DocumentSnapshot snap, String type) {
     this.snap = snap;
     dataContainer.setSegmented((type == "Founds") ? 0 : 1);
+    for(int i=0 ; i<snap.get('pictureCount') ; i++) {
+      UploadJob upload = new UploadJob();
+      // upload.action = actionUpload;
+      // upload.storageReference!.fullPath =
+      // 여기에 path를 업데이트 시킬 수 있는 스킬이 있다면 가능할 것임
+      _profilePictures.add(upload);
+    }
     // Map<String,dynamic> jsonData = jsonDecode(snap.get('uploadedImages').toString());
     // _profilePictures = (json.decode(snap.get('uploadedImages').toString()) as List).map((i) => UploadJob.fromJson(i)).toList();
     _titleController.text = snap.get('title').toString();
@@ -89,7 +95,7 @@ class UpdateWritePage extends StatelessWidget {
                     firestore.collection("Founds").doc(snap.id).update({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
-                        'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
+                        'picture' + i.toString() : _profilePictures[i].storageReference!.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),
@@ -105,7 +111,7 @@ class UpdateWritePage extends StatelessWidget {
                     firestore.collection("Losts").doc(snap.id).update({
                       'pictureCount': length,
                       for(int i=0 ; i<length ; i++)
-                        'picture' + i.toString() : _profilePictures[i].storageReference.fullPath,
+                        'picture' + i.toString() : _profilePictures[i].storageReference!.fullPath,
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'item': dataContainer.getItem(),

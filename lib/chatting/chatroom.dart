@@ -130,18 +130,6 @@ class _ChatRoomViewState extends State<ChatRoomView>
           child:
           AppBar(
             elevation: 0,
-            // leading: IconButton(
-            //   icon: Image.asset("images/이전@4x.png", scale: 4),
-            //   onPressed: () {
-            //     Navigator.push(
-            //         context,
-            //         PageRouteBuilder(
-            //           pageBuilder: (context, animation1, animation2) => SignIn(),
-            //           transitionDuration: Duration(seconds: 0),
-            //         )
-            //     );
-            //   },
-            // ),
             backgroundColor: const Color(0xff6990FF),
             centerTitle: true,
             title: chatRoomName != null ? Text(chatRoomName, style: TextStyle(

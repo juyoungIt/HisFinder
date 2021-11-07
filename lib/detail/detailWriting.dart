@@ -288,10 +288,15 @@ class _MyDetailState extends State<MyDetail> {
                           SizedBox(height: 5.0),
                           // 메세지 보내기 버튼에 대한 부분
                           MaterialButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              DocumentSnapshot ds = await db.collection('Users').doc(writerID).get();  //유저 아이디로 유저 정보 가져오기
+                              // participantsString = participants[0];  //닉네임 가져오기
+                              String participantsString="";
+                              if(!ds.exists) participantsString = "unknown";
+                              else participantsString = ds['nickname'];
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 String chatRoomID =
-                                    "chatInit/$writerID/${FirebaseAuth.instance.currentUser!.uid}";
+                                    "chatInit/" + participantsString + "/${FirebaseAuth.instance.currentUser!.uid}";
                                 // "chatInit/${widget.writerId}/${widget.boardType}";
                                 // "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
                                 return ChatRoomView(
