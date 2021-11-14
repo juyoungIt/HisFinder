@@ -296,12 +296,12 @@ class _MyDetailState extends State<MyDetail> {
                               else participantsString = ds['nickname'];
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 String chatRoomID =
-                                    "chatInit/" + participantsString + "/${FirebaseAuth.instance.currentUser!.uid}";
-                                // "chatInit/${widget.writerId}/${widget.boardType}";
+                                    "chatInit/" + writerID + "/" + participantsString;
+                                // "chatInit/${widget.writerId}/${widget.boardType}";${FirebaseAuth.instance.currentUser!.uid}
                                 // "chatInit/bi/IoWY4yaZWSTCRpSqQUKpx8SzMfs1";
                                 return ChatRoomView(
                                   chatRoomID: chatRoomID,
-                                  chatRoomName: "",
+                                  chatRoomName: participantsString,
                                 );
                               }));
                             },

@@ -11,6 +11,8 @@ import 'package:intl/intl.dart';
 // import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'chatroomList.dart';
+
 // import 'package:full_screen_image/full_screen_image.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 // @dart=2.9
@@ -137,6 +139,18 @@ class _ChatRoomViewState extends State<ChatRoomView>
               fontWeight: FontWeight.w500,
               color: Colors.white,
             ),) : Text("Loading..."),
+            // actions: <Widget>[ TextButton(
+            //   onPressed: () {
+            //     Navigator.pop(context);
+            //     },
+            //   child: Text(
+            //     '나가기',
+            //     style: TextStyle(
+            //       fontFamily: 'avenir',
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),]
           ),
         ),
         body: Stack(
@@ -453,7 +467,7 @@ class _ChatRoomViewState extends State<ChatRoomView>
         }
       }
       // chatRoomName = await _getReceiverNick(receiverID);
-      chatRoomName = tokens[1];
+      chatRoomName = tokens[2];
     } else {
       chatRoomName = "에러가 발생했습니다. 재시도해주세요.";
     }
