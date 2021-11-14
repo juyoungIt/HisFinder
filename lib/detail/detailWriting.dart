@@ -110,6 +110,7 @@ class _MyDetailState extends State<MyDetail> {
               return Stack(
                 children: <Widget>[
                   ListView(
+                    physics: ClampingScrollPhysics(),
                     children: <Widget>[
                       CarouselSlider(
                         options: CarouselOptions(
