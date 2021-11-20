@@ -1,19 +1,27 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/detail/detailWriting.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-import 'Search.dart';
+import 'package:untitled/detail/detailWriting.dart';
+import 'package:untitled/notification/notificationList.dart';
 
-// 습득물 관련 페이지를 완성하는 부분
-class LostListPage extends StatefulWidget {
+// String value;
+
+class SearchResultPage extends StatefulWidget {
+  late final String _type; // 분실물 or 습득물
+  late final String _item; // 분실물 항목
+  SearchResultPage(this._type, this._item);
+
   @override
-  _LostListPageState createState() => _LostListPageState();
+  _SearchResultPageState createState() => _SearchResultPageState(_type, _item);
 }
 
-class _LostListPageState extends State<LostListPage> {
+class _SearchResultPageState extends State<SearchResultPage> {
+  late final String _type;
+  late final String _item;
+
+  _SearchResultPageState(this._type, this._item);
+
   final ScrollController _scrollController = ScrollController(); // 스크롤 관련 이벤트를 핸들링 하기 위한 컨트롤러
   bool isMoreRequesting = false; // 사용자로부터 추가적인 데이터 요청이 존재하는 지를 의미하는 변수
   int nextPage = 0; // 현재까지 로딩한 페이지의 인덱스
@@ -31,6 +39,7 @@ class _LostListPageState extends State<LostListPage> {
   List<DocumentSnapshot> items = [];       // 화면에 출력되는 record 를 저장하는 부분
   List<DocumentSnapshot> users = []; // 로그인한 사용자의 정보를 담는 document snapshot
 
+
   List<WriteData> writeDatas = []; // 실질적으로 사용할 수 있는 data의 리스트
 
   @override
@@ -39,77 +48,150 @@ class _LostListPageState extends State<LostListPage> {
     requestNew();
   }
 
+  // @override
+  // void setState(VoidCallback fn) {
+  //   super.setState(fn);
+  //   // _item = value;
+  // }
+
+  // public void update(){
+  //
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(color: Colors.white),
-        Container(
-          height: ((80 + searchHeight * (-1)) < 0) ? 0 : (80 + searchHeight * (-1)),
-          decoration: BoxDecoration(
-              color: Color(0xff6990FF),
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(10.0),
-                bottomLeft: Radius.circular(10.0),
-              )
+    // print("!");
+
+    if(serverItems.length == 0) {
+      return Scaffold(
+          appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.black, //change your color here
+              ),
+              elevation: 0.0,
+              title: Text(
+                _type + " : " + _item,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'avenir',
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                ),
+                textScaleFactor: 1.4,
+              ),
+              centerTitle: true,
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: IconButton(
+                      icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => NotificationListPage()),
+                        );
+                      }),
+                ),
+              ],
+              backgroundColor: Colors.white
           ),
-        ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  // height: 150.0,
-                  child: NotificationListener<ScrollNotification> (
-                    onNotification: (ScrollNotification notification) {
-                      scrollNotification(notification);
-                      return false;
-                    },
-                    child: RefreshIndicator(
-                      color: Color(0xff6990FF),
-                      onRefresh: requestNew,
-                      child: ListView.separated(
-                          controller: _scrollController,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return Container(color: Colors.white, child: const Divider());
+          body: Text("데이터가 존재하지 않습니다.")
+      );
+    }
+    else
+      return Scaffold(
+          appBar: AppBar(
+              iconTheme: IconThemeData(
+                color: Colors.black, //change your color here
+              ),
+              elevation: 0.0,
+              title: Text(
+                _type + " : " + _item,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'avenir',
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
+                ),
+                textScaleFactor: 1.4,
+              ),
+              centerTitle: true,
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: IconButton(
+                      icon: Image.asset("assets/notice_black.png", width: 73, height: 76, scale: 3),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => NotificationListPage()),
+                        );
+                      }),
+                ),
+              ],
+              backgroundColor: Colors.white
+          ),
+          body: Stack(
+            children: [
+              Container(color: Colors.white),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        // height: 150.0,
+                        child: NotificationListener<ScrollNotification> (
+                          onNotification: (ScrollNotification notification) {
+                            scrollNotification(notification);
+                            return false;
                           },
-                          // padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, int index) {
-                            if (index == 0)
-                              return HeaderTile();
-                            else {
-                              double imageSize =
-                              (items[index-1].get('pictureCount') == 0) ? _defaultImageSize : _customImageSize;
-                              return writeRecordTile(context, items[index-1], index, imageSize);
-                            }
-                          },
-                          physics: ClampingScrollPhysics(),
-                          itemCount: writeDatas.length+1
+                          child: RefreshIndicator(
+                            color: Color(0xff6990FF),
+                            onRefresh: requestNew,
+                            child: ListView.separated(
+                                controller: _scrollController,
+                                separatorBuilder: (BuildContext context, int index) {
+                                  return Container(color: Colors.white, child: const Divider());
+                                },
+                                // padding: const EdgeInsets.all(0),
+                                itemBuilder: (context, int index) {
+
+                                  double imageSize =
+                                  (items[index].get('pictureCount') == 0) ? _defaultImageSize : _customImageSize;
+                                  return writeRecordTile(context, items[index], index + 1, imageSize);
+                                },
+                                physics: ClampingScrollPhysics(),
+                                itemCount: writeDatas.length//+1
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              Container(
-                height: isMoreRequesting ? 50.0 : 0,
-                color: Colors.white,
-                child: Center(
-                  child: CircularProgressIndicator(color: Color(0xff6990FF)),
+                    Container(
+                      height: isMoreRequesting ? 50.0 : 0,
+                      color: Colors.white,
+                      child: Center(
+                        child: CircularProgressIndicator(color: Color(0xff6990FF)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
-          ),
-        ),
-      ],
-    );
+          )
+      );
   }
 
   // load the new data
   Future<void> requestNew() async {
     nextPage = 0;        // 현재 페이지
+    String docName = (_type == "분실물") ? "Losts" : "Founds";
     FirebaseFirestore firebase = FirebaseFirestore.instance;
-    var ref = firebase.collection('Losts').orderBy('createAt', descending: true);
+    // 전체를 받아옴
+    var ref = firebase.collection(docName).orderBy('createAt', descending: true);
     var user = firebase.collection('Users');
     await ref.get().then((value) {
       postQuery = value;
@@ -123,6 +205,24 @@ class _LostListPageState extends State<LostListPage> {
     writeDatas.clear();
     serverItems.addAll(postQuery.docs);
     users.addAll(userQuery.docs);
+
+    List<DocumentSnapshot> data = []; // 서버로부터 가져오는 데이터를 담음
+    String keyword = _item.toLowerCase();
+
+    // Linear search
+    for(int i=0 ; i < serverItems.length ; i++) {
+
+      String title = serverItems[i].get('title').toString();
+      String content = serverItems[i].get('content').toString();
+
+      if (title.toLowerCase().contains(keyword))
+        data.add(serverItems[i]);
+      else if (content.toLowerCase().contains(keyword))
+        data.add(serverItems[i]);
+    }
+    // 새로운 데이터를 serverItems 에 넣기
+    serverItems.clear();
+    serverItems.addAll(data);
 
     setState(() {
       int count;
@@ -143,7 +243,6 @@ class _LostListPageState extends State<LostListPage> {
       writeDatas.add(writeData);
     }
   }
-
   Future<void> requestMore() async {
     int nextDataPosition = (nextPage * 10); // 10개 단위로 데이터를 읽어오기 때문
     int dataLength = 10; //가져올 데이터 크기
@@ -180,10 +279,6 @@ class _LostListPageState extends State<LostListPage> {
     }
     else if (notification is ScrollUpdateNotification) {
       _dragDistance -= notification.scrollDelta!;
-      // 검색바를 위한 부분
-      // setState(() {
-      //   searchHeight = _scrollController.offset;
-      // });
     }
     else if (notification is ScrollEndNotification) {
       var percent = _dragDistance / (containerExtent);
@@ -242,94 +337,8 @@ class _LostListPageState extends State<LostListPage> {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, "Losts")),
-                    );
-                  },
-                  child: Stack(
-                      children: <Widget>[
-                        Container(
-                            color: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  child: SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Center(
-                                      child: CachedNetworkImage(
-                                          imageUrl: snap.data.toString(),
-                                          placeholder: (context, url) => CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) => Icon(Icons.error),
-                                          width: imageSize,
-                                          height: imageSize
-                                      )
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 100,
-                                    padding: const EdgeInsets.only(left: 20, top: 2),
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          writeDatas[index-1].title,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(
-                                          "물품 : " + writeDatas[index-1].item,
-                                          style: TextStyle(
-                                              fontSize: 12, color: Color(0xff999999)),
-                                        ),
-                                        Text(
-                                          "장소 : " + writeDatas[index-1].place,
-                                          style: TextStyle(
-                                              fontSize: 12, color: Color(0xff999999)),
-                                        ),
-                                        Text(
-                                          "습득일 : " + writeDatas[index-1].date,
-                                          style: TextStyle(
-                                              fontSize: 12, color: Color(0xff999999)),
-                                        ),
-                                        SizedBox(
-                                          width: 80,
-                                          height: 20,
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.black,
-                                                  borderRadius: BorderRadius.all(Radius.circular(10))
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text("완료", style: TextStyle(color: Colors.white))
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )
-                        ),
-                        Container(height: 120, color: Colors.white54) // 완료 글 임을 보여주기 위한 효과
-                      ]
-                  ),
-                );
-              }
-              // 해당 글이 종료되지 않은 경우
-              else {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, "Losts")),
+                        context,
+                        MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts"))
                     );
                   },
                   child: Stack(
@@ -369,17 +378,101 @@ class _LostListPageState extends State<LostListPage> {
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          "물품 : " + writeDatas[index-1].item,
+                                          "물품 " + writeDatas[index-1].item,
                                           style: TextStyle(
                                               fontSize: 12, color: Color(0xff999999)),
                                         ),
                                         Text(
-                                          "장소 : " + writeDatas[index-1].place,
+                                          "장소 " + writeDatas[index-1].place,
                                           style: TextStyle(
                                               fontSize: 12, color: Color(0xff999999)),
                                         ),
                                         Text(
-                                          "습득일 : " + writeDatas[index-1].date,
+                                          "습득일 " + writeDatas[index-1].date,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        SizedBox(
+                                          width: 80,
+                                          height: 20,
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius: BorderRadius.all(Radius.circular(10))
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text("완료", style: TextStyle(color: Colors.white))
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                        ),
+                        Container(height: 120, color: Colors.white54) // 완료 글 임을 보여주기 위한 효과
+                      ]
+                  ),
+                );
+              }
+              // 해당 글이 종료되지 않은 경우
+              else {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyDetail(snapshot, (_type == "분실물") ? "Founds" : "Losts")),
+                    );
+                  },
+                  child: Stack(
+                      children: <Widget>[
+                        Container(
+                            color: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  child: SizedBox(
+                                    width: 100,
+                                    height: 100,
+                                    child: Center(
+                                      child: Image.network(
+                                        snap.data.toString(),
+                                        width: imageSize,
+                                        height: imageSize,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 100,
+                                    padding: const EdgeInsets.only(left: 20, top: 2),
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          writeDatas[index-1].title,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          "물품 " + writeDatas[index-1].item,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "장소 " + writeDatas[index-1].place,
+                                          style: TextStyle(
+                                              fontSize: 12, color: Color(0xff999999)),
+                                        ),
+                                        Text(
+                                          "습득일 " + writeDatas[index-1].date,
                                           style: TextStyle(
                                               fontSize: 12, color: Color(0xff999999)),
                                         ),
@@ -477,51 +570,58 @@ class _LostListPageState extends State<LostListPage> {
     );
   }
 }
-
-// 화면 상단 검색창을 포함하는 부분
-class HeaderTile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    TextEditingController controller = new TextEditingController();
-    return Container(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SizedBox(
-              height: 40,
-              child: TextFormField(
-                controller: controller,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: Color(0xff6990FF)),
-                  fillColor: Colors.white,
-                  filled: true,
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                  hintText: "잃어버린 물건을 검색해보세요!",
-                ),
-                style: TextStyle(
-                    color: Colors.black,
-                    decorationColor: Colors.black
-                ),
-                cursorColor: Colors.black,
-
-                textInputAction: TextInputAction.go,
-                onFieldSubmitted: (value) async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SearchResultPage("분실물", controller.text)),
-                  );
-                },
-
-              ),
-            ),
-          ),
-        )
-    );
-  }
-}
+//
+// // 화면 상단 검색창을 포함하는 부분
+// class HeaderTile extends StatelessWidget {
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     TextEditingController controller = new TextEditingController();
+//     return Container(
+//         child: Center(
+//           child: Padding(
+//             padding: const EdgeInsets.all(20.0),
+//             child: SizedBox(
+//               height: 40,
+//               child: TextFormField(
+//                 controller: controller, //- 여기에 controller 추가하는 작업 필요함
+//                 // controller: , - 여기에 controller 추가하는 작업 필요함
+//                 decoration: InputDecoration(
+//                   prefixIcon: Icon(Icons.search, color: Colors.black),
+//                   fillColor: Colors.white,
+//                   filled: true,
+//                   focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+//                   enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+//                   errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+//                   contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+//                   hintText: "잃어버린 물건을 검색해보세요!",
+//                 ),
+//                 style: TextStyle(
+//                     color: Colors.black,
+//                     decorationColor: Colors.black
+//                 ),
+//                 cursorColor: Colors.black,
+//
+//
+//                 textInputAction: TextInputAction.go,
+//                 onFieldSubmitted: (value) async {
+//                   // code here
+//                   // SearchResultPage createState() => SearchResultPage("습득물", controller.text);
+//                   // SearchResultPage createState() => SearchResultPage("습득물", controller.text);
+//                   // SearchResultPage createState() => SearchResultPage("습득물", controller.text);
+//
+//                    value = controller.text;
+//                    // print ("!!");
+//                 },
+//
+//
+//               ),
+//             ),
+//           ),
+//         )
+//     );
+//   }
+// }
 
 class WriteData {
   late String title;

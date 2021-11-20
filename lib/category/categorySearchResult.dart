@@ -144,17 +144,13 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
                               },
                               // padding: const EdgeInsets.all(0),
                               itemBuilder: (context, int index) {
-                                // return writeRecordTile(context, items[index], index);
-                                if (index == 0)
-                                  return HeaderTile();
-                                else {
-                                  double imageSize =
-                                    (items[index-1].get('pictureCount') == 0) ? _defaultImageSize : _customImageSize;
-                                  return writeRecordTile(context, items[index-1], index, imageSize);
-                                }
+
+                                double imageSize =
+                                (items[index].get('pictureCount') == 0) ? _defaultImageSize : _customImageSize;
+                                return writeRecordTile(context, items[index], index + 1, imageSize);
                               },
                               physics: ClampingScrollPhysics(),
-                              itemCount: writeDatas.length+1
+                              itemCount: writeDatas.length//+1
                           ),
                         ),
                       ),
@@ -538,41 +534,6 @@ class _CategorySearchResultPageState extends State<CategorySearchResultPage> {
             return Text("Error! - Network Failure...");
           }
         }
-    );
-  }
-}
-
-// 화면 상단 검색창을 포함하는 부분
-class HeaderTile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SizedBox(
-              height: 40,
-              child: TextFormField(
-                // controller: , - 여기에 controller 추가하는 작업 필요함
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search, color: Colors.black),
-                  fillColor: Colors.white,
-                  filled: true,
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  errorBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  contentPadding: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                  hintText: "잃어버린 물건을 검색해보세요!",
-                ),
-                style: TextStyle(
-                    color: Colors.black,
-                    decorationColor: Colors.black
-                ),
-                cursorColor: Colors.black,
-              ),
-            ),
-          ),
-        )
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/detail/detailWriting.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import 'Search.dart';
 
 class FoundListPage extends StatefulWidget {
   @override
@@ -474,6 +475,8 @@ class _FoundListPageState extends State<FoundListPage> {
 
 // 화면 상단 검색창을 포함하는 부분
 class HeaderTile extends StatelessWidget {
+
+  TextEditingController controller = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -483,7 +486,7 @@ class HeaderTile extends StatelessWidget {
             child: SizedBox(
               height: 40,
               child: TextFormField(
-                // controller: , - 여기에 controller 추가하는 작업 필요함
+                controller: controller, //- 여기에 controller 추가하는 작업 필요함
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search, color: Color(0xff6990FF)),
                   fillColor: Colors.white,
@@ -499,6 +502,14 @@ class HeaderTile extends StatelessWidget {
                     decorationColor: Colors.black
                 ),
                 cursorColor: Colors.black,
+
+                textInputAction: TextInputAction.go,
+                onFieldSubmitted: (value) async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchResultPage("습득물", controller.text)),
+                  );
+                },
               ),
             ),
           ),
